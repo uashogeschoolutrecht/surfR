@@ -1,0 +1,237 @@
+---
+title: 'Exercise 1 - Analytics Using R; github.com & RStudio'
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    css: ../exercises/exercises_style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE,
+                      error = FALSE,
+                      message = FALSE,
+                      fig.width = 5, fig.height = 3)
+```
+
+```{r, root, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## Packages
+```{r}
+library(tidyverse)
+```
+
+## R is Case sensitive
+
+*_Important note: R is case-sensitive, meaning that it will matter whether you use capital or lower case, keep this in mind if you get a cryptic warning or error!_*
+
+## How to run the code in RStudio
+
+This document contains code chunks:
+```{r, eval=FALSE} 
+# a code chunk begins with ```{r}
+y <- rnorm(100)
+x <- sum(y)
+x
+hist(y)
+# and ends with ```
+``` 
+
+## Running your first R-code
+These so called code chunks contain R code that does something: 
+
+For example: calculate the mean of a number of random normal numbers. 
+Without running the code, can you guess what the mean will approximately be?
+Why is it not eaxactly 10?
+```{r, results='hide'}
+set.seed(12345)
+random <- rnorm(n = 1000, mean = 10, sd = 1.5)
+mean(random)
+hist(random, breaks = 80)
+```
+_*Try adjusting the `n = 100` and the `breaks` arguments, to a larger or smaller number*_
+
+## Run the code chunks as follows:
+place the cursor somewhere in a code chunk and between the 
+` ```{r} ` and the ` ``` ` and press the keys: 
+
+`Ctrl` `Shift` and `Enter` simultaneously. 
+
+The code will run and the results will show either in the console, or below the code chunk. 
+
+## Run a line of code as follows:
+
+ - Place the cursor somewhere on the line that you want to run.
+ - Press the keys:
+
+`Cntrl` and `Enter` simultaneously.
+
+You can also run a piece of code by selecting the code by dragging the cursor and left-click mouse, and entering:
+
+`Cntrl` and `Enter` simultaneously.
+
+
+## Cloud server for RStudio
+
+ - Preinstalled version of the R-IDE (integrated development environment) RStudio
+ - Runs on a remote server (SURF HPC) and has all the add-ons that are needed to run the code. 
+ - Login with the credentials supplied at the beginning of the workshop. 
+
+To login to this server:
+
+ **https://data.innovativetesting.nl**
+
+## RStudio interface
+```{r ide, echo=FALSE, fig.align='left', fig.width=20}
+knitr::include_graphics(path = file.path(root, "images", "1a_rstudio_interface.png"))
+```
+
+## Setting up private package repositories
+
+- Default RStudio has only enabled the CRAN repository, but there are other useful repositories that contain nice R packages. 
+- Enable the Bioconductor repositories (located at http://www.bioconductor.org) as packages from these repositories are often used in molecular biology. 
+- We only need to do this once, so the next time you start Rstudio it remembers which repositories are enabled. 
+- Type in the Console window (not the R script window!) the following command: 
+
+```
+setRepositories(graphics=TRUE)
+```
+
+Did it work? Please let us know if not.
+
+## About this document: Literate programming
+
+ - This document is an R-markdown document. 
+ - To create documents containing normal text, code and output of that code together. 
+ - So-called _"Literate Programming"_
+ - Part of the "Reproducible research" philosophy.
+ - R Markdown can also include and interpret LaTeX, which is used much in the technical fields. 
+ - It can render formulas as well
+ - You can render RMarkdown to a number of formats (pdf, Word, Powerpoint, html)
+ 
+## Example formula in LaTeX
+ 
+ Working_with_R = $\sqrt[root](absolute(\frac{Participants\;fun}{much\;persistence}))$
+
+## Where do my files live?
+ 
+The root of a project can be defined by:
+``` 
+if (!require("rprojroot")) install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+root
+``` 
+
+## Be relative, be collected
+
+ * Use relative pathays  (relative to `root`)
+ * Include the `root` chunk in every script (*.Rmd, *.R) 
+ * How to create paths?
+ * Collect every analysis in a separate RStudio Project, preferably in an R-package
+ 
+# Reading data into R
+
+## Inspecting a file with a Linux Command (UBUNTU)
+```{r}
+system("head ./data/allijn.tsv -n40")
+## this file has comments with '##'
+```
+
+## Reading data into R with the `{readr}` package
+```{r}
+path_data <- file.path(root, "data", "allijn.tsv")
+data <- read_delim(file = path_data, 
+                   delim = "\t",
+                   comment = c("##"))
+data %>% head(nrow = 2)
+## type ?readr to get information on other functions to import data in different file formats 
+```
+
+## Creating a graph from this data to do some exploration
+
+ * Read the comments (lines with `##`) in the file "./data/allijn.txt"
+ * Discuss with your neighbour what 2 types of graphs would you want to make fist when recieving this data. 
+ * Write the result of you discussion in a new .Rmd file by clicking `File` -> `New File` -> `R Markdown`
+ * Save this file in the root of the current `surf` project 
+ * You will need this for exercise 2
+
+## Current working directory
+
+To see what the current working directory is, you can execute the command
+
+`getwd()` 
+
+in the Console window. Try it now!
+
+If all went well the final bit of the working directory will state "/surfr"
+
+## Setting up an analysis
+
+ - Start by creating an R script file that will contain all the steps taken to get to a certain result. 
+ - Initially a scrapbook to note down what exactly you did. 
+ - Annotate scripts with `# Comments`
+
+__I use `##` for comments and `#` to disable a line of code__
+
+ - During this workshop, we will create a special R script file (`.Rmd`) for every exercise that contains the steps of that particular exercise (for instance a file named `"exercise_github_rstudio_mystery.Rmd"`). 
+
+
+## Using Git/github.com for your own work
+
+Git/github.com are two seperate things
+
+ * Git is the language that deals with version control of code, documents and data
+ * github.com is a place to store, create, share, download and review code, packages, issues and get help
+
+## Working with a local and a remote git repository
+
+ 1. In this exercise we will `initiate` a new git repo on www.github.com
+ 2. We will `clone` the remote repo to a new RStudio Project
+ 3. Than we will `add` some new files to our local copy of the remote repo
+ 4. Furthermore, we will `commmit` the changes locally \
+ 5. And than `push` the local changes to the remote to synchonize remote and local git repos
+ 
+## Creating you first git **`repo`** on www.github.com
+
+ * Go to github.com and login
+ * Create a new `repository`, by clicking the green button. Call it "surf_git_demo"
+ * Copy the url of this new github repo to the clipboard
+ 
+## Initiating a local git repo in  RStudio
+
+ * Create a `New Project` in RStudio, select the option `Version Control`
+ * Copy the url from the clipboard into the `url` field
+ * Let the clone finish
+ 
+## Adding new files
+
+ * Create a new textfile (`File` -> `New` -> `Text File`)
+ * Write a few lines that indicate what this repository is all about
+ * Save the file to disk under the name `README.txt`
+ 
+## Staging files and committing 
+
+ * Click on the `Git` pane in the upper right panel
+ * Search for the `README.txt` file and click the small square in front of the file (this is called `Staging`)
+ * Click the `Commit` button in the `Git` pane
+ * A new view will appear, write a short message (so-called `Commit`) in the upper right text field (`Commit message`). 
+ * Click the `Commit` button below the entered message
+ If all goes well you will get a put up view stating [master ....] add .... and more info on the added files.
+
+## Pushing the `local` changes to the `remote`
+
+To synchronize the `local` changes that you just `committed` with the `remote` repo you need to `Push` the `local` changes to the `remote`. 
+
+To do this:
+
+ * You first always need to `Pull`, press the little blue downwards arrow to `Pull` any remote changes 
+ * After `Pulling`, click the upward arrow to `Pull` 
+ * Visit the remote repo 
+ 

@@ -1,0 +1,47 @@
+
+
+## start workshop 10:30
+
+ - intro 5 min. (Jan Willem - programme WS)
+ - introduction to the workshop materials  - managing expectations
+
+ - activerende vragen (welk mensen hebben we voor ons?)
+
+## USE Case demo (jonathan - psychiatrie UU) - 20 min (10:40 - 11:00)
+
+PART 1- hands-on
+
+11:00 - 11:45 uur (Marc) *.R script
+
+ * Getting the materials from github.com (5 min)
+
+ * Demo RSTudio, on-the-fly R basics (users follow by typing along) 
+ - RSTudio interface, panes, 
+ - vectors []
+ - global envi
+ - head(),  names()
+ - loading datafiles (interactive)
+ - dataframes (tibbles)
+ - subsetting & [,]  
+ - R-scripts / R-Markdown 
+
+ * Git intermezzo? Jan-Willem (rationale behind using git/github.com
+ for programming)
+
+ -- LUNCH -- 
+
+12:30 - 14:30 Hands-on part 2
+
+ * RECAP: basics (Rmd / slide deck)? - 5-10 min'
+ * Visualizations (mtcars) - R4DS (slide deck Rmd) 45 - 60 min
+ * EXERCISE - 20 -30 min (get coffee if you want)
+ * USE CASE 2 Open Analytics - 20 (Shiny / Viz)
+
+ -- COFFEE BREAK --
+
+15:00 - 17:00 Hands-on part 3
+ 
+ * Tidy data / reading data
+ * dplyr (flights) (slide deck / Rmd)
+ * Shiny - gallery - search for mt
+

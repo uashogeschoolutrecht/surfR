@@ -1,0 +1,474 @@
+---
+title: "Introduction to {dplyr}"
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation: 
+    highlight: pygments
+    widescreen: yes
+---
+<style>
+
+.footer {
+    font-size: 16pt;
+    color: Black;
+    font-family: 'Helvetica'
+    content: attr(label);
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align:center;
+    bottom: 10px;
+    line-height: 1.9;
+    display: block;
+}
+
+</style>
+
+<div class="footer" style="margin-top;font-size:120%;"> 
+Data Analysis Using R - `r Sys.Date()` </div>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 3)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## When working with data you must:
+
+* Figure out what you want to do
+* Describe those tasks in the form of a computer program
+* Execute the program
+
+## the {dplyr} package
+The dplyr package makes these steps fast and easy:
+
+* dplyr simplifies how you can think about common data manipulation tasks.
+* Simple "verbs", functions that correspond to the most common data manipulation tasks, to help you translate those thoughts into code.
+* It uses efficient data storage backends, so you spend less time waiting for the computer.
+
+## Data bases can be connected to dplyr
+
+ * Besides in-memory data frames
+ * {dplyr} also connects to out-of-memory, remote databases. 
+ * By translating your R code into the appropriate SQL
+ * Allows you to work with both types of data using the same set of tools.
+
+## Packages
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+## Data: `nycflights13::flights`
+
+* Built in `nycflights13` data frame. 
+* Contains all `r nrow(nycflights13::flights)` flights that departed from New York City in 2013. 
+* Data comes from the US [Bureau of Transportation Statistics](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in `?nycflights13`
+
+## To install the package containing the data
+```{r}
+# install.packages("nycflights13")
+library(nycflights13)
+dim(flights)
+head(flights)
+flights <- nycflights13::flights
+
+```
+
+__dplyr can work with data frames as is, but if you're dealing with large data, it's worthwhile to convert them to a `tbl_df`: this is a wrapper around a data frame that won't accidentally print a lot of data to the screen.__
+
+## Single table verbs
+
+Dplyr aims to provide a function for each basic verb of data manipulation:
+
+* `filter()` (and `slice()`)
+* `arrange()`
+* `select()` (and `rename()`)
+* `distinct()`
+* `mutate()` (and `transmute()`)
+* `summarise()`
+* `sample_n()` (and `sample_frac()`)
+
+
+## Filter rows 
+
+* `filter()` allows you to select a subset of rows in a data frame. 
+* The first argument is the name of the data frame. 
+* The second and subsequent arguments are the expressions that filter the data frame:
+For example, we can select all flights on January 1st, 2013 with:
+```{r}
+## look at the variable names
+names(flights)
+
+```
+
+## Factor levels (grouping variable)
+```{r}
+flights$year %>% unique()
+flights$year <- as.factor(flights$year)
+levels(flights$year)
+```
+
+## The actual filtering (January 1st)
+"January 1st" equals to `flights$month == 1 & flights$day == 1`
+````{r}
+# ?dplyr::filter  calls the help file for this function
+january_1st <- filter(flights, month == 1 & day == 1)
+january_1st
+```
+
+## Multiple filters
+Expanding the search and using `%>%`
+```{r}
+february_1st <- flights %>%
+  filter(month == 2, day == 1, arr_delay <= 0) %>%
+           arrange(desc(carrier))
+head(february_1st)
+february_1st$arr_delay
+
+names(flights)
+alway_delayed <- flights %>% 
+  filter(arr_delay > 0) %>% 
+  arrange(desc(carrier))
+ 
+
+alway_delayed %>% select(carrier, arr_delay, day, month) %>%
+  arrange(desc(arr_delay)) %>%
+  mutate(arr_delay_in_hours = arr_delay/60 )
+
+```
+
+## Base R equivalent
+Selecting rows and columns by logical indexing
+
+**Remember: `data_frame[rows, columns]`**
+
+```{r}
+index_logical <- flights$month == 1 & flights$day == 1
+head(index_logical)
+## selecting the proper rows
+flights[index_logical,]
+```
+
+## Logical indexing in one call
+```{r, eval = FALSE}
+flights[flights$month == 1 & flights$day == 1, ]
+## notice where we've put the comma
+```
+
+## Selecting the first column and the first ten rows with the index
+```{r}
+flights[c(1:10),1]
+```
+
+## Filter booleans
+ 
+* `filter()` works similarly to `subset()` except that you can give it any number of filtering conditions, which are joined together with `&` (not `&&` which is easy to do accidentally!).  
+* You can also use other boolean operators. 
+* You can use `|` as the `OR` boolean operator, and `!` as `NOT`:
+
+```{r, eval = FALSE}
+## Data from January and February only
+jan_feb <- filter(flights, month == 1 | month == 2)
+
+## Delayed at departure in January and February
+(dep_delayed <- flights %>% 
+  filter(month == 1 | month == 2) %>%
+  filter(!dep_delay <= 0)) # shows all dep_delay (except <= 0)
+```
+
+## `slice`: To select rows by position, use `slice()`
+
+```{r}
+slice(flights, c(1,5,7,8,9))
+```
+What is the base-R equivalent?
+
+## Arrange rows with `arrange()`
+
+* `arrange()` works similarly to `filter()` 
+* It reorders rows  
+* It takes a data frame and a set of column names (or more complicated expressions) to order by. 
+* If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns
+* Equivalent to `sort` function in MS Office Excel
+
+```{r}
+arrange(flights, year, month, day)
+```
+
+## Use `desc()` to order a column in descending order:
+
+```{r}
+x <- arrange(flights, arr_delay)
+head(x$arr_delay)
+```
+
+## Base R equivalent
+`dplyr::arrange()` works the same way as `plyr::arrange()`. It's a straightforward wrapper around `order()` that requires less typing. The previous code is equivalent to:
+
+```{r, eval = FALSE}
+flights[order(flights$year, flights$month, flights$day), ] 
+flights[order(flights$arr_delay, decreasing = TRUE), ] 
+flights[order(-flights$arr_delay), ]
+## again look at the position of the comma
+```
+
+## Select columns with `select()`
+
+* To select the columns of a dataframe that are actually of interest to you. 
+* `select()` allows you to rapidly zoom in on a data subset:
+
+```{r}
+everything_but_month <- flights %>%
+  select(month:arr_delay, year)
+
+# Select columns by name
+select(flights, year, month, day)
+# Select all columns between year and day (inclusive)
+select(flights, dep_delay:air_time)
+# Select all columns except those from year to day (exclusive)
+select(flights, -(year:day))
+names(flights)
+```
+
+
+## Additional 'select' helper functions
+There are a number of helper functions you can use within `select()`, like '
+
+- `starts_with()`
+- `ends_with()`
+- `matches()` 
+- `contains()`. 
+These let you quickly match larger blocks of variables that meet some criterion. See `?select` for more details.
+
+## Renaming variables
+You can rename variables with `select()` by using named arguments:
+
+```{r}
+rename(flights, tail_num = tailnum)
+```
+
+## Extract distinct (unique) rows
+
+Use `distinct()` to find unique values in a table:
+
+```{r}
+#unique(flights$carrier) # base-R
+distinct(flights, carrier) # dplyr
+names(flights)
+
+flights$carrier <- as.factor(flights$carrier)
+levels(flights$carrier)
+
+unique(flights$tailnum)
+unique(flights$origin)
+unique(flights$dest)
+```
+
+(This is very similar to `base::unique()` but should be much faster.)
+
+## Add new variable with `mutate()`
+
+* To add new columns that are functions (calculations) of existing columns. 
+* This is the job of `mutate()`:
+
+```{r}
+flights_mutated <- flights %>%
+  mutate(gain = arr_delay - dep_delay,
+  speed = distance / air_time * 60) %>%
+  filter(gain <= 0) %>% 
+  select(gain, speed, carrier, origin, month, day) %>%
+  arrange(gain)
+
+flights_mutated
+```
+
+
+## Another `mutate` example
+```{r}
+mutate(flights,
+  gain = arr_delay - dep_delay,
+  gain_per_hour = gain / (air_time / 60)
+) 
+```
+
+
+## Summarise values with `summarise()`
+
+The last verb is `summarise()`. It collapses a data frame to a single row (this is exactly equivalent to `plyr::summarise()`):
+
+```{r}
+summarise(flights,
+  delay = mean(dep_delay, na.rm = TRUE))
+names(flights)
+summary <- flights %>% 
+  group_by(carrier) %>%
+  summarise(mean_air_time = mean(air_time, na.rm = TRUE)) %>%
+  arrange(desc(mean_air_time))
+summary  
+
+
+```
+
+## applying `summarise()`
+Below, we'll see how this verb can be very useful.
+
+## Randomly sample rows with `sample_n()` and `sample_frac()`
+
+You can use `sample_n()` and `sample_frac()` to take a random sample of rows: use `sample_n()` for a fixed number  and `sample_frac()` for a fixed fraction.
+
+```{r}
+sample_n(flights, 10)
+sample_frac(flights, 0.01)
+```
+## Commonalities
+
+You may have noticed that the syntax and function of all these verbs are very similar:
+
+* The first argument is a data frame.
+* The subsequent arguments describe what to do with the data frame. Notice that you can referto columns in the data frame directly without using `$`.
+* The result is a new data frame
+
+Together these properties make it easy to chain together multiple simple steps to achieve a complex result.
+
+## Grouped operations
+
+Grouping affects the verbs as follows:
+
+* grouped `select()` is the same as ungrouped `select()`, except that 
+  grouping variables are always retained. 
+* grouped `arrange()` orders first by the grouping variables
+
+* `mutate()` and `filter()` are most useful in conjunction with window 
+  functions (like `rank()`, or `min(x) == x`). They are described in detail in 
+  `vignette("window-functions")`.
+  
+* `sample_n()` and `sample_frac()` sample the specified number/fraction of
+  rows in each group.
+  
+* `slice()` extracts rows within each group.
+  
+* `summarise()` is powerful and easy to understand, as described in 
+  more detail below.
+
+In the following example, we split the complete dataset into individual planes and then summarise each plane by counting the number of flights (`count = n()`) and computing the average distance (`dist = mean(Distance, na.rm = TRUE)`) and arrival delay (`delay = mean(ArrDelay, na.rm = TRUE)`). We then use ggplot2 to display the output.
+
+```{r, warning = FALSE, message = FALSE, fig.width = 6}
+by_tailnum <- flights %>%
+   group_by(tailnum) %>%
+   summarise(count = n(),
+   dist = mean(distance, na.rm = TRUE),
+   delay = mean(arr_delay, na.rm = TRUE)) %>%
+   arrange(desc(delay))
+by_tailnum
+
+(flights_slow <- flights %>%
+  filter(tailnum == "D942DN"))
+
+
+(delay <- filter(by_tailnum, count > 20, dist < 2000))
+```
+
+## Plotting
+```{r} 
+# Interestingly, the average delay is only slightly related to the
+# average distance flown by a plane.
+p <- ggplot(data = delay, aes(x = dist, y= delay)) +
+  geom_point() +
+  geom_smooth() +
+  scale_size_area() +
+  facet_wrap(~ count)
+p
+?geom_smooth
+```
+
+## Summarise with aggregate
+You use `summarise()` with __aggregate functions__, which take a vector of values and return a single number. There are many useful examples of such functions in base R like `min()`, `max()`, `mean()`, `sum()`, `sd()`, `median()`, and `IQR()`. dplyr provides a handful of others:
+
+* `n()`: the number of observations in the current group
+
+* `n_distinct(x)`:the number of unique values in `x`.
+
+* `first(x)`, `last(x)` and `nth(x, n)` - these work
+  similarly to `x[1]`, `x[length(x)]`, and `x[n]` but give you more control
+  over the result if the value is missing.
+
+## Destinations
+For example, we could use these to find the number of planes and the number of flights that go to each possible destination:
+
+```{r}
+destinations <- group_by(flights, dest)
+summarise(destinations,
+  planes = n_distinct(tailnum),
+  flights = n()
+)
+```
+
+## Inceremental summary (roll-up)
+When you group by multiple variables, each summary peels off one level of the grouping. That makes it easy to progressively roll-up a dataset:
+
+```{r}
+daily <- group_by(flights, year, month, day)
+(per_day   <- summarise(daily, flights = n()))
+(per_month <- summarise(per_day, flights = sum(flights)))
+(per_year  <- summarise(per_month, flights = sum(flights)))
+```
+
+However you need to be careful when progressively rolling up summaries like this: it's ok for sums and counts, but you need to think about weighting for means and variances (it's not possible to do this exactly for medians).
+
+## Chaining
+The dplyr API is functional in the sense that function calls don't have side-effects. You must always save their results. This doesn't lead to particularly elegant code, especially if you want to do many operations at once. You either have to do it step-by-step:
+
+```{r, eval = FALSE}
+a1 <- group_by(flights, year, month, day)
+a2 <- select(a1, arr_delay, dep_delay)
+a3 <- summarise(a2,
+  arr = mean(arr_delay, na.rm = TRUE),
+  dep = mean(dep_delay, na.rm = TRUE))
+a4 <- filter(a3, arr > 30 | dep > 30)
+```
+
+## The complicated way
+Or if you don't want to save the intermediate results, you need to wrap the function calls inside each other:
+
+```{r}
+filter(
+  summarise(
+    select(
+      group_by(flights, year, month, day),
+      arr_delay, dep_delay
+    ),
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ),
+  arr > 30 | dep > 30
+)
+```
+
+## The pipe alternative
+This is difficult to read because the order of the operations is from inside to out. Thus, the arguments are a long way away from the function. To get around this problem, dplyr provides the `%>%` operator. `x %>% f(y)` turns into `f(x, y)` so you can use it to rewrite multiple operations that you can read left-to-right, top-to-bottom:
+
+```{r, eval = FALSE}
+flights %>%
+  group_by(year, month, day) %>%
+  select(arr_delay, dep_delay) %>%
+  summarise(
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ) %>%
+  filter(arr > 30 | dep > 30)
+```
+
+## Other data sources
+
+As well as data frames, dplyr works with data that is stored in other ways, like data tables, databases and multidimensional arrays.
+

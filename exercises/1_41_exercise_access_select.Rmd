@@ -1,0 +1,117 @@
+---
+title: "Exercise - Vectors, Access, Select & Ordering"
+author: "Marc A.T. Teunis"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      results = 'hide',
+                      fig.show = 'hide',
+                      warning = FALSE, 
+                      message = FALSE, 
+                      error = FALSE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+```{r, packages, echo=TRUE}
+library(tidyverse)
+```
+
+__Write an Rmd file, containing code chunks (if applicable) and answer all the questions below. Store the file in a folder called: "./answers_exercises" in your course project folder. Give this file the same name as the title of the current Rmd file__
+
+# Vectors
+ 
+## Character Vectors
+
+1) Create a character vector named char that has capital letters "A", "B
+```{r}
+char <- rep(LETTERS[1:4], 4)
+```
+
+2) Select all instances of capital letter "B"
+```{r}
+ind <- char == "B"
+ind
+char[ind]
+
+```
+
+3) Replace all instances of capital letter "D" with "d"
+```{r}
+char[char == "D"] <- c("d")
+char
+```
+
+4) Assign the letter "B" to a variable and then replace all instances of capital letter "B" in the vector character (char) with "b" using this variable. (Hint: use `tolower()`)
+```{r}
+#char <- rep(LETTERS[1:4], 4)
+char
+mychar <- "B"
+char[char == mychar] <- tolower(mychar)
+mychar
+char
+```
+
+## Numeric vectors 
+
+5) Create a numerical vector named numbers using the `runif()` function consisting of 30 values between -2 and 10.
+```{r}
+set.seed(10)
+numbers <- runif(30, min=-2, max=10)
+```
+
+6) Select all values greater than 3. How many do you get? (Hint: use length) What is the sum of these values?
+```{r}
+length(numbers[numbers > 3])
+sum(numbers[numbers > 3])
+```
+
+7) Select all values smaller than -1.2 or greater than 4. How many do you get?
+```{r}
+# step 1:`
+positions <- numbers < -1.2 | numbers > 4
+positions
+
+#step 2:
+length(numbers[positions])
+
+# or in one go:
+length(numbers[numbers < -1.2 | numbers > 4])
+```
+
+8) Assign missing values randomly to this vector using the following R code: `numbers[sample(1:30, sample(5:10, 1))] <- NA` . How many missing values do you have?
+```{r}
+numbers
+numbers[sample(1:30, sample(5:10, 1))] <- NA
+numbers
+
+length(numbers[is.na(numbers)]) # or: 
+sum(is.na(numbers))
+# since sum(logical.index) converts the logical to 0 and 1 first!
+```
+
+# Missing values
+
+9) Rewrite the statement from exercise 8 to also exclude missing values. (Hint: and operators have precedence over or operators) How many values do you get? What is the average of these values?
+```{r}
+# First filter:
+numbers2 <- numbers[ !is.na(numbers) ] # after this, same as exercise 8
+# OR:
+sum( numbers <  -1.2 | numbers > 4, na.rm=TRUE)    # see Exercise 9
+mean( numbers[ numbers <  -1.2 | numbers > 4 ], na.rm=TRUE )  # (version 23 nov contained error)
+# OR: rely on fact that  NA & FALSE is still FALSE (and also NA | TRUE is TRUE)
+ind <- (numbers < -1.2 | numbers > 4) & !is.na(numbers)
+length(numbers[ind])
+mean(numbers[ind])
+```
+

@@ -1,0 +1,133 @@
+---
+title: "Exercise day 5 - Statistical functions"
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Exercises Iteration and functions: if()
+Please make sure you create a new R script file to save the steps taken during the exercises as indicated in the introduction exercise.
+if() statements: fool-proofing
+If your function will be used more often and/or by others, it is useful to check the input arguments in order to spot errors early. As an example, extend your density+rug plotting function with some checks on the data types. Use the stop() or the warning() function to notify the user of the problem.
+
+```{r}
+dens.plot  <- function(x, main="title", col="black", 
+                       ticksize=0.01, tick.col=col) {
+  
+    if( !is.numeric(x) || !is.character(main)  ) {  ### etc.
+        stop("dens.plot: wrong input types")
+    }
+  
+    plot(density(x), main=main, col=col)
+    rug(x, ticksize=ticksize, col=tick.col)
+}
+
+
+```
+
+## Making functions more flexible
+Extend the “density + rug” plot with an extra argument “existing” (type logical, with sensible default) that allows you to add an additional graph to an already existing plot (use the lines() function to add lines to an existing plot)
+
+```{r}
+dens.plot  <- function(x, main="title", col="black", ticksize=0.01, tick.col=col, 
+                       existing=FALSE) {
+    if( !is.numeric(x) || !is.character(main)  ) {  ### etc.
+        stop("dens.plot: wrong input types")
+    }
+    if(existing) {
+        lines(density(x), col=col)
+    } else { 
+        plot(density(x), main=main, col=col)
+    }
+    rug(x, ticksize=ticksize, col=tick.col)
+}
+
+```
+## Exercises Statistical functions
+
+### Quantiles
+From the ssn6 deletion data, calculate the average of the changes of the transcripts in the lower 10% of the values, and those of the upper 10% of the values (use the quantile() function). Would you consider the deleted ssn6 gene to be a repressor of transcription, or an activator?
+
+```{r}
+x <- M[, 'ssn6_del']
+q <- quantile(x=x, probs= c(0.1, 0.9))
+mean(x [ x < q[1] ])
+mean(x [ x > q[2] ] )
+```
+
+### Quantile plots
+Determine whether the expression changes of the arp5 deletion have a Normal distribution or not, using the function qqnorm().
+
+```{r}
+del <- 'arp5_del'
+x <- M[, del]
+qqnorm(x, main=del)
+```
+
+Now do the same by looking at the expression changes that are within the 1-99% percentile.
+
+```{r}
+x <- M[, del]
+q <- 0.01  ### close to Normal
+q <- quantile(x, probs=c(q, 1-q) )
+x <- x[ x > q[1] & x < q[2] ]
+qqnorm(x, main=paste(del, "trimmed"))
+```
+
+### Sampling and correlation
+Select two random deletion names (hint: use sample() with argument size=1, on the column names of the big data matrix), and determine the correlation of their expression values.
+
+```{r}
+one <- sample(colnames(M),size=1)
+other <- sample(colnames(M),size=1)
+cor(M[ , one], M[, other])
+```
+
+### Hypothesis testing
+The levels of histones, the building blocks of nucleosomes, don’t change much in general. What is the p-value, in our deletion mutant data set,  for the average transcription level of the Histone H1 gene (YPL127C)  being different from 0? Use t.test() (without the y-argument) to test this.
+
+```{r}
+t.test(M["YPL127C",])
+In contrast, the heat shock proteins generally do change. Look up their systematic name as follows:
+hsp.idx <- grep("^HSP", SGD$geneSymbol)
+hsps <- intersect( rownames(M), SGD[hsp.idx, "systematicName"])
+```
+
+For each of these genes, compare how their transcript level changes differ from those of the H1 histone using the t.test() function. Hint: extract the p-value from the list returned by t.test() using something like the.result$p.value. Simply print out the results using the general printing function cat(). (to print a newline, use the character "\n")
+
+```{r}
+H1 <- "YPL127C"
+
+for ( hsp in hsps ) {
+  t <- t.test(x=M[hsp, ], y=M[H1, ])
+  cat(hsp, ":", t$p.value,"\n")
+}
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

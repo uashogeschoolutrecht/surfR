@@ -1,0 +1,486 @@
+---
+title: "Import Data - Exercise"
+author: "Marc A.T. Teunis"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      results = 'hide', 
+                      fig.show = 'hide',
+                      warning = FALSE, 
+                      message = FALSE, 
+                      error = FALSE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+__Write an Rmd file, containing code chunks (if applicable) and answer all the questions below. Store the file in a folder called: "./answers_exercises" in your course project folder. Give this file the same name as the title of the current Rmd file__
+
+
+## This exercise is to learn how to load (and inspect) data in R
+
+- Loading data into R is step 1 of every analysis
+- If you can not load the data, you can not preform any analysis on it
+
+## Selecting the proper function in {readr} 
+
+1A) What function would you use to read a file where fields were separated with  
+"|"?
+
+**ANSWER**    
+```{r, eval=FALSE}
+library(readr)
+read_delim(file = file, delim = "|")
+```
+    
+1B) Apart from `file`, `skip`, and `comment`, what other arguments do
+    `readr::read_csv()` and `readr::read_tsv()` have in common?
+
+```{r}
+library(readr)
+?read_csv
+# read_csv(file, col_names = TRUE, col_types = NULL,
+#  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+#  quote = "\"", comment = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+#  guess_max = min(1000, n_max), progress = show_progress())
+
+?read_tsv
+#read_tsv(file, col_names = TRUE, col_types = NULL,
+#  locale = default_locale(), na = c("", "NA"), quoted_na = TRUE,
+#  quote = "\"", comment = "", trim_ws = TRUE, skip = 0, n_max = Inf,
+#  guess_max = min(1000, n_max), progress = show_progress())
+
+# guess_max
+# col_types
+# col_names
+# n_max
+# show_progress
+# trim_ws
+# quote 
+# na
+# quoted_na
+# locale
+
+```
+
+1C) What are the most important arguments to `read_fwf()`?
+```{r}
+?readr::read_fwf
+```
+   
+1D) Sometimes strings in a CSV file contain commas. To prevent them from causing problems they need to be surrounded by a quoting character, like `"` or `'`. By convention, `read_csv()` assumes that the quoting character will be `"`, and if you want to change it you'll need to
+use `read_delim()` instead. What arguments do you need to specify to read the following text into a data frame?
+    
+```{r}
+x <- "x,y\n1,'a,b'"
+read_delim(x, quote = "'", escape_backslash = TRUE,
+           delim = ",")
+```
+    
+1E) Identify what is wrong with each of the following inline CSV files. What happens when you run the code?
+Write a code chunk that corrects the code:
+
+CSV 1
+```{r, echo=TRUE}
+read_csv("a,b\n1,2,3\n4,5,6")
+```
+
+**ANSWER**
+```{r}
+# new row is not correctly defined
+# correction
+read_csv("a,b\n 1,2\n 3,4\n 5,6")
+```
+
+CSV 2
+```{r, echo=TRUE}
+read_csv("a,b,c\n1,2\n1,2,3,4")
+```
+
+**ANSWER**
+```{r}
+# correction:
+read_csv("a,b,c\n 1,2,3\n 1,2,3")
+```
+
+CSV 3
+```{r, echo=TRUE}
+read_csv("a,b\n\"1")
+```
+
+**ANSWER**
+```{r}
+# correction:
+read_csv("a,b\n\'1', '2'")
+```
+
+CSV 4
+```{r, echo=TRUE}
+read_csv("a,b\n1,2\na,b")
+```
+
+**ANSWER**
+```{r}
+# correction:
+read_csv("a,b\n1,2")
+```
+
+CSV 5
+```{r, echo=TRUE}
+read_csv("a;b\n1;3")
+```
+
+**ANSWER**
+```{r}
+# correction:
+read_csv("a,b\n1,3") #or
+read_delim("a;b\n1;3", delim = ";")
+```
+
+## Data types
+
+MS Excel is still a frequently used file format: `*.xls` or the "newer" format `*.xlsx` 
+
+ 2A) List three reasons why you should avoid MS Excel formats for your data
+
+ 2B) Which functions in R (you are allowed to google) can you use to read `xls`  or `xlsx`  files?
+
+ 2C) What does `CSV` mean?
+
+ 2D) What type of delimiters (to seperate columns) can be used in datafiles?  List at least 3.
+
+**ANSWER:**
+```{r, eval=FALSE}
+## 2A) It is proprietary: meaning it is not universal,
+## the format can change over time. It is not platform 
+## independent
+
+## 2B) readxl:read_excel / readxl::read_xls /
+## readxl::read_xlsx / gdata::read.xlsx / 
+## xlsx::read.xlsx 
+## / xlsx::read.xlsx2
+
+## 2C) commas seperated values: a platform and 
+## non-propriatary, universal format for flat-tabular 
+## data
+
+## 2D ";" / "," / "TAB" / "SPACE(S)" / "|" or any 
+## specific delimiter that does not exist inside the 
+## data-entries
+```
+
+## Loading datafiles
+For this exercise we are going to load and inspect a number of files
+
+## Loading Microsoft Office Excel files. 
+
+ 3A) Loading an Excel file
+ 
+In the `"./data"` folder of your project you wille find several example datafiles that we are going to work on during the exercises.
+
+The first set we are going to work on is a rather simple example
+
+"./data/Animals.xls". 
+
+It is an Miscrosoft Excel file containing brain and body weight of a number of animals: http://mste.illinois.edu/malcz/DATA/BIOLOGY/Animals.html 
+
+DESCRIPTION:
+Average brain and body weights for 27 species of land animals.
+
+VARIABLES:
+
+ - body: body weight in kg
+ - brain: brain weight in g 
+
+SIZE: 
+
+ - Observations = 27; 
+ - Variables = 2
+
+SOURCE:
+Rousseeuw, P.J. & Leroy, A.M. (1987) Robust Regression and Outlier Detection. Wiley, p. 57.
+
+Write a code chunk that loads the file `"./data/Animals.xls"` into R. 
+You may use any function you like, but you are not allowed to transform the data in any way. Name the file `animals` as a datatable/dataframe/tibble in R 
+
+
+**TIPs** 
+ 
+ - You can use the `readr::readxl` function to solve this question.
+ - Rember to use `library` to load the required package(s)
+ - The first row that contains data is the "Mountain Beaver" observation
+ - Remember that in some functions you can also set `header = FALSE`
+ - The variables in this dataset need to be `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER!. These are the so-called `names` of the dataframe and can be set or checked using the function `names()`
+ - Remember `dplyr::select`, `dplyr::filter()`, `dplyr::group_by`, `dplyr::summarize()`
+ 
+**ANSWER:**
+
+```{r}
+# tidyverse solution
+# readxl::readxl solution
+library(readxl)
+path_to_file <- file.path(root, "data", "Animals.xls")
+animals_readxl <- readxl::read_excel(path = path_to_file, sheet = 1,
+                              skip = 1, trim_ws = TRUE)
+
+animals_readxl <- na.omit(animals_readxl)
+animals_readxl <- animals_readxl[-1,] 
+
+
+
+?readxl
+## something went wrong, we need to skip a line 
+## the names are not correct, change if neccessary, see 2C
+```
+
+```{r, eval=FALSE}
+# Other option: {xlsx}
+# install.packages("xlsx")
+library(xlsx)
+?read.xlsx2
+animals_xlsx <- read.xlsx2(file = path_to_file, startRow = 4,
+                           sheetIndex = 1)
+``` 
+
+```{r}
+# other option: {gdata}
+library(gdata)
+?read.xls()
+?read.csv
+animals_gdata = read.xls(path_to_file, sheet = 1, header = TRUE,
+skip = 1)
+
+## OKAY, so obviously, there are good reasons, NOT to use Excel files to store data!!
+
+```
+
+ 3B) Variable names.
+The `names` of a dataframe can be found or set with `names(dataframe)`. Try setting the names for the `animal` dataframe to `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER. 
+
+**ANSWER:**
+
+```{r}
+names(animals_readxl) <- c("animal", "body_weight", "brain_weight")
+
+## other solution:
+colnames(animals_readxl) <- c("animal", "body_weight", "brain_weight")
+
+pander::pander(head(animals_readxl))
+```
+
+ 3C) Subsetting.
+The `animals` data can be subsetted and explored by using the subsetting functions from `dplyr`.
+
+  - Which animal has a body weight of 6654.000 kg and a brain weight of 5712.0 g?
+  - Write a few lines of code that extract this information from the dataframe.
+
+**ANSWER:** 
+
+```{r}
+library(dplyr)
+## dplyr solution:
+animals_readxl %>% filter(body_weight == 6654 & brain_weight == 5712)
+
+## base-R solution 
+#ind <- animals_readxl[,2] == 6654 & animals_readxl[, 3] == 5712 
+#animals_readxl[ind, ]
+```
+
+ 3D) Filtering.
+Which animal has the smallest brain weight? 
+Write code that confirms this finding  
+ 
+ **TIPs**
+ 
+ - Use `dplyr::filter()` and `%>%` to find the answer.
+ - You can also use `min(vector, na.rm = TRUE)` to find the answer. 
+ - Try to write a few lines of code that answer this question with the correct output in the `Console` 
+```{r}
+## dplyr solution
+head(animals_readxl %>% arrange(brain_weight), 1)
+
+## or
+animals_readxl %>% 
+  filter(brain_weight == min(animals_readxl$brain_weight, 
+                             na.rm = TRUE))
+
+```
+
+ 3E) Plots; 
+Create a plot that shows the realtionship between `body_weigth` and `brain_weight`. Create a dot plot, that shows this relationship.
+
+**TIPs**
+ 
+ - Remember `ggplot2` from the "Visualizations" class
+ - Remember `geom_point()`
+ - Remember `geom_smooth()`
+ - Remember using `%>%` in conjunction with `ggplot()` and the `dplyr` verbs
+ 
+#### ANSWER:
+```{r}
+library(ggplot2)
+plot <- animals_readxl %>% 
+  ggplot(aes(x = body_weight, y = brain_weight)) +
+    geom_point() +
+    geom_smooth()
+plot
+```
+
+
+ 3F) Removing oulier. 
+On the basis of the plot above, construct a new plot that eliminates the data point for the animal "Brachiosaurus". What can you conclude from the relationship between body weigth and brain weigth, from this new plot? 
+
+**ANSWER:** 
+```{r}
+no_brachio <- animals_readxl %>% filter(!animal == "Brachiosaurus") %>%
+  ggplot(aes(x = body_weight, y = brain_weight)) +
+    geom_point() +
+    geom_smooth()
+no_brachio
+```
+
+ From the plot, what can you conclude about the relationship. Are there any outliers?
+
+ 3G) Data Transformation.
+Plot the relationship of the full dataset (including "Brachiosaurus"), between body weight and brain weight.
+Transform the body_weight variable to a log10 scale
+```{r}
+library(ggplot2)
+plot <- animals_readxl %>% 
+## create a new variable (log10 transformed body_weight)
+    mutate(log10_bw = log10(body_weight)) %>%
+## create a new plot  
+  ggplot(aes(x = log10_bw, y = brain_weight)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+## call the plot
+plot
+```
+
+ 3H) What can you conclude from the 3G plot? 
+What happens to the relation between body_weigt and brain_weight if you excluse all dinosaurs ("Brachiosaurus", "Diplodocus" and "Triceratops") from the dataset?
+**Write a short conclusion on this plot.**
+
+**ANSWER:**
+```{r}
+library(ggplot2)
+no_dinos <- animals_readxl %>%
+  filter(!animal == "Brachiosaurus" & 
+         !animal == "Diplodocus" &
+         !animal == "Triceratops") %>%
+## create a new variable (log10 transformed body_weight)
+    mutate(log10_bw = log10(body_weight)) %>%
+## create a new plot  
+  ggplot(aes(x = log10_bw, y = brain_weight)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+## call the plot
+no_dinos
+```
+
+## Loading CSV files
+
+ 4A Let's load an example csv file:
+
+This file contains patient information from a hospital. The data concerns gastric bypasses and contains patient information on surgery, age and some clinical parameters.
+
+Write a couple of lines of code that import the file "./data/Patients file MONDIAL.csv" into your R Environment.
+
+**TIPs**
+ 
+ - Inspect the file first by Viewing it (left-click mouse on the file and choose "View File").
+ - Remember to set the NA strings: meaning you will have to tell R what indicator in the file is used to indentify missing values: In this file "NA" and "?" are both used as 'missing value-indices'. Construct a character vector of "NA" and "?" and use this vector as and argument to the function that loads the file.
+ - This datafile is a csv file, rember the `readr::read_...()` functions.
+
+**ANSWER:**
+```{r}
+## tidyverse solution
+# install.packages()
+library(readr)
+?read_csv
+path_to_file_mondial <- file.path(root, "data", "Patients file MONDIAL.csv")
+mondial <- read_delim(file = path_to_file_mondial, delim = ";", na = c("NA", "?"))
+```
+
+ 4B) Average age vs BMI. The dataset contains information from obese patients that underwent gastric sugery. 
+ 
+What is the average age (`Age at surgery`) and BMI (`BMI`) of the patients in the dataset?
+Write a few lines of code that provides the axact answer: i.e. ONLY the mean values for age at surgery and the BMI.
+
+**TIPs**
+ 
+ - Remember `mean()`
+ - Remember the `$` operator to access a variable
+ - You can also use the `summary()` function to answer this question
+
+**ANSWER:**
+```{r}
+# ?mean
+# mondial$`Age at surgery`
+(average_age <- mean(mondial$`Age at surgery`))
+(average_bmi <- mean(mondial$BMI))
+rbind(average_bmi, average_age)
+
+## or:
+averages <- summary(mondial[, c("Age at surgery", "BMI")])
+averages[4, ]
+```
+
+ 4C) Relationship between `bmi` and `Fasting glucose mmol/L`
+Generate a plot that shows the relationship between `bmi` or `Fasting glucose mmol/L`
+
+**ANSWER**
+```{r}
+glucose_bmi <- mondial %>%
+  ggplot(aes(x = `Fasting glucose mmol/L`, 
+             y = BMI)) +
+  geom_point() +
+  geom_smooth()
+glucose_bmi
+```
+
+ 4D) Type 2 Diabetes.
+Type 2 Diabetes is associated with obesity or so-called metablic syndrome.
+Indicate in the plot which datapoints belong to `T2D` by using the grouping aesthetics.
+ 
+**TIPs**
+
+ - Remember ggplot's `aes(group = ...)` and/or `aes(color = ...`
+
+**ANSWER:**
+```{r}
+glucose_bmi_t2d <- mondial %>%
+  ggplot(aes(x = `Fasting glucose mmol/L`, 
+             y = BMI)) +
+  geom_point(aes(colour = T2D)) +
+  geom_smooth()
+
+glucose_bmi_t2d
+
+```
+
+What can you conclude on the consistency of coding 
+
+ 4E) Facetting for `Sex`.
+Add facetting to the plot for gender (`Sex`) in the data.
+
+**ANSWER:**
+```{r}
+glucose_bmi_t2d_facets <- mondial %>%
+  ggplot(aes(x = `Fasting glucose mmol/L`, 
+             y = BMI)) +
+  geom_point(aes(colour = T2D)) +
+  geom_smooth() + facet_wrap(~ Sex)
+glucose_bmi_t2d_facets
+
+```

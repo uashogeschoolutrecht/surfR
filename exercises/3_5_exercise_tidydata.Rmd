@@ -1,0 +1,526 @@
+---
+title: "Exercise - Tidy data"
+author: "Marc A.T. Teunis"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      results = 'hide',
+                      fig.show = 'hide',
+                      warning = FALSE, 
+                      message = FALSE, 
+                      error = FALSE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+```{r, packages, echo=TRUE}
+library(tidyverse)
+
+```
+
+__Write an Rmd file, containing code chunks (if applicable) and answer all the questions below. Store the file in a folder called: "./answers_exercises" in your course project folder. Give this file the same name as the title of the current Rmd file__
+
+## Inspecting tidyness
+
+1A) Using prose, describe how the variables and observations are organised in each of the sample tables: 
+`table1`, `table2`, `table3`, `table4a`, `table4b`.
+
+1B) Compute the `rate` for `table2`, and `table4a` + `table4b`. 
+
+You will need to perform four operations:
+
+ 1.  Extract the number of TB cases per country per year.
+ 2.  Extract the matching population per country per year.
+ 3.  Divide cases by population, and multiply by 10000.
+ 4.  Store back in the appropriate place.
+ 5.  Sort the data according year (ascending)
+ 
+**TIPS**
+ 
+ - You will need {tidyr} and {dplyr}
+ - You will also need `mutate()` to calculate the rate
+ - Use the pipe `%>%` 
+ - Rember `gather()` collects observations in columns into variable columns (from wide to stacked) and `spread()` unstacks variables into variable columns (from stacked to wide)
+ - Table 4a contains the cases, table 4b contains the populations
+ - For joining the tables 4a and 4b you can use the `dplyr::left_join()` function. See `help("dplyr")` or `?dplyr` for more information.
+
+**ANSWER**
+table2
+```{r}
+library(tidyr)
+library(dplyr)
+table2 <- table2
+table2_tidy <- table2 %>%
+  spread(key = "type", value = "count") %>%
+  mutate(rate = (cases/population)*1000) %>%
+  arrange(year)
+table2_tidy
+```
+
+**ANSWER**
+table 4a + 4b
+```{r}
+table4a <- tidyr::table4a
+table4b <- tidyr::table4b
+table4a
+table4b
+
+table4a_tidy <- table4a %>%
+  gather(`1999`:`2000`, key = "year", value = "cases")
+
+table4b_tidy <- table4b %>%
+  gather(`1999`:`2000`, key = "year", value = "population")
+
+table4_union <- left_join(table4a_tidy, 
+                          table4b_tidy, 
+                          by = c("country", "year")) %>%
+  mutate(rate = (cases/population)*1000) %>%
+  arrange(year)
+
+table4_union
+```
+
+Which representation is easiest to work with? Which is hardest? Why?
+
+## Plotting tidy data
+
+2A)  Recreate the plot showing change in cases over time using `table2`
+instead of `table1`. What do you need to do first?
+
+**ANSWER**
+```{r}
+library(ggplot2)
+
+cases_over_time <- table2 %>%
+  spread(key = "type", value = "count") %>%
+  mutate(rate = (cases/population)*1000) %>%
+  arrange(year) %>%
+  ggplot(aes(x = as.factor(year), y = cases)) +
+  geom_point(aes(colour = country)) +
+  geom_text(aes(label = country), hjust = -0.2, vjust = -0.7) +
+  geom_line(aes(group = country, colour = country)) +
+  theme(legend.position="none") +
+  expand_limits(y = c(0, 250000)) +
+  xlab("Year") +
+  ylab("Number of Cases")
+                 
+cases_over_time
+
+
+
+```
+
+2B) Why does the code below fail, can you fix it?
+
+```{r, error = TRUE, echo=TRUE}
+    table4a %>% 
+      gather(1999, 2000, key = "year", value = "cases")
+```
+
+
+3A)  Tidy the simple tibble below. Do you need to spread or gather it?
+```{r, echo=TRUE}
+    preg <- tribble(
+      ~pregnant, ~male_count, ~female_count,
+      "yes",      NA,        18,
+      "no",       20,        12,
+      "no",       34,        78,
+      "yes",      NA,        23
+)
+
+```
+
+**ANSWER**
+```{r}
+preg_tidy <- preg %>%
+   gather(male_count:female_count, 
+          key = "count", 
+          value = number)
+preg_tidy
+```
+
+3B) Calculate the percentage of females that are pregnant, of all females in the dataset. 
+```{r}
+names(preg_tidy)
+
+preg_females <- preg_tidy %>%
+  filter(pregnant == "yes" & count == "female_count") %>%
+  summarise(females = sum(number)) 
+preg_females
+
+females <- preg_tidy %>%
+  filter(count == "female_count") %>%
+  summarise(females = sum(number)) 
+females
+
+((preg_females/females)*100)
+
+```
+
+3C) How many males are there in the dataset? How many of them are pregnant ;-)
+
+**ANSWER**
+```{r}
+names(preg_tidy)
+
+males <- preg_tidy %>% na.omit() %>%
+  filter(count == "male_count") %>%
+  summarise(males = sum(number)) 
+males
+
+preg_males <- preg_tidy %>% na.omit() %>%
+  filter(pregnant == "yes" & count == "male_count") %>%
+  summarise(females = sum(number)) 
+preg_males
+
+## of course there are nog pregnant males
+
+```
+
+4A) What do the `extra` and `fill` arguments do in `separate()`? Experiment with the various options for the following two toy datasets.
+    
+    ```{r, eval = FALSE}
+    tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+      separate(x, c("one", "two", "three"))
+    
+    tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+      separate(x, c("one", "two", "three"))
+    ```
+
+
+4B) Compare and contrast the functions `separate()` and `extract()`.  Why are there three variations of separation (by position, by separator, and with groups), but only one unite?
+
+
+# Bonus question
+
+5A) Tidy the following dataset: "./data/messydata_5a.xlsx"
+The data represents Mariages during the four seasons for a number of years in regions in Germany. 
+
+Note: Germany has 16 states. When you load the data you will notice that the coding of the factor variable "State" is not consistent. You will need to correct tihs coding in order for the data to be tidy.
+Use the function from {forcats} `forcats::fct_recode()` to achieve this. This file "./data/germany_states.txt" contains information on the states. How can you load this file into R?
+
+
+**TIPS**
+ 
+ - Use the code below to read all the sheets of the excel file, look at the help function first.
+ - Which parameter of `read_excel()` controls the sheets to read? 
+ - To read multiple sheets, a for loop is used
+ - The Excel file contains 7 sheets 
+ - Check spelling and values: are they consistent. 
+ - Apply what you learned in the 'strings/regex' lesson to tidy the values
+ - Think about `gather()` or `spread()`, which do you need?
+ - To convert a list of dataframes to one dataframe look at:
+ the help for the function `dplyr::bind_rows()`. You will have to use this to convert the list of sheets into one dataframe.
+- The first two sheets of the Excel file contain mistakes and errors
+
+### Read data
+```{r, echo=TRUE}
+library(readxl)
+
+# path to data file
+path_to_messy_mariages <- file.path(root, 
+                                    "data", 
+                                    "messydata_5a.xlsx")
+
+
+# load messy data in empty list with loop and read_excel
+messy_mariages <- list()
+
+for(i in 1:7){
+  messy_mariages[[i]] <- read_excel(path = path_to_messy_mariages, 
+                                    sheet = i)
+  messy_mariages[[i]]$timestamp <- i
+}
+
+messy_mariages
+```
+
+**ANSWER**
+```{r, eval=FALSE}
+# loading required packages
+library(tidyverse)
+library(readxl)
+library(stringr)
+library(forcats)
+
+# path to data file
+path_to_messy_mariages <- file.path(root, 
+                                    "data", 
+                                    "messydata_5a.xlsx")
+
+# load messy data in empty list with loop and read_excel
+messy_mariages <- list()
+
+for(i in 1:7){
+  messy_mariages[[i]] <- read_excel(path_to_messy_mariages, 
+                                    sheet = i)
+  messy_mariages[[i]]$timestamp <- i
+}
+
+messy_mariages
+messy_sheet_1 <- messy_mariages[[1]]
+messy_sheet_1 <- messy_sheet_1[c(2:17), c(4:9)]
+names(messy_sheet_1) <- c(names(messy_mariages[[3]]))                     
+messy_mariages[[1]] <- messy_sheet_1 
+
+
+# bind list to data frame
+messy_mariages_df <- do.call(rbind.data.frame, messy_mariages)
+
+# load the state information from "./data/germany_states.txt"
+# Does the file contain headers?
+germany_states <- readr::read_tsv(file = "./data/germany_states.txt",
+                                  col_names = FALSE)
+# restructuring data
+## gathering variables into columns
+restructured_mariages <- messy_mariages_df %>% 
+  tidyr::gather(spring:winter, 
+                key = "season", 
+                value = "number_mariages")
+  
+restructured_mariages$timestamp <- as.factor(
+  restructured_mariages$timestamp)
+
+levels(restructured_mariages$timestamp)
+
+tidy_mariages <- restructured_mariages %>%
+# change timestamps to actual Years
+## use forcats::recode
+mutate(year = forcats::fct_recode(timestamp,
+                                  "1990" = "1",
+                                  "2003" = "2",
+                                  "2010" = "3",
+                                  "2011" = "4",
+                                  "2012" = "5",
+                                  "2013" = "6",
+                                  "2014" = "7"))
+  
+# look at the restructed data
+tidy_mariages
+
+# set 'names' tolower
+names(tidy_mariages) <- tolower(names(tidy_mariages))
+names(tidy_mariages)
+
+# have a closer look at the Statenames (convert to factor)
+tidy_mariages$state <- as_factor(tidy_mariages$state)
+levels(tidy_mariages$state)
+
+# relabel factor levels
+tidy_mariages <- tidy_mariages %>%
+  mutate(state = fct_recode(state,
+                      "Baden-Württemberg" = "BaWü",
+                      "Hessen" = "Hesssen",
+                      "Hessen" = "Hesse"))
+                      
+levels(tidy_mariages$state)
+
+
+# save tidy data as csv
+path <- file.path(root, "data", "tidy_mariages.csv")
+write_csv()
+
+rowSums(tidy_mariages)
+                  
+                  
+                  
+# # Start analyzing your tidy data
+# how many marriages per year?
+marriageperyear <- data_restructed %>% 
+  group_by(timestamp) %>% # groups data by year
+  dplyr::summarise(value = sum(value)) # adds up the values per year
+
+marriageperyear
+
+## visual analysis
+
+# Compare the marriages of 1990, 2003 and 2014 and colourize them by season
+# filter data by the years 1990, 2003 and 2014, group it by year and season and add up the values
+marriageperyearnseason <- data_restructed %>%
+  filter(timestamp %in% c("1990", "2003", "2014")) %>%
+  group_by(timestamp, variable) %>% 
+  dplyr::summarise(value = sum(value)) 
+
+# ggplot the filtered data
+ggplot(data = marriageperyearnseason, aes(x = timestamp, y = value, 
+                                          fill = factor(variable), order = variable)) +  
+geom_bar(stat = "identity") +
+theme_minimal() +
+xlab("Year") + 
+scale_y_continuous(name="Marriages", 
+                   # specify aesthetics of y-axis labels
+                   labels=function(x) format(x, big.mark = "'", scientific = FALSE)) + 
+guides(fill=guide_legend(title="season", reverse = T)) +
+ggtitle("Marriages per Year and season") 
+
+
+# Compare the number of marriages in 2014 per state and colourize them by season
+# filter data by the year 2014 and group it by season and state, add up the values
+marriageperstate14 <- data_restructed %>%
+  filter(timestamp %in% c(2014)) %>%
+  group_by(variable, State) %>% 
+  dplyr::summarise(value = sum(value)) 
+
+# stacked barplot with ggplot (incl. dashed meanline)
+meanlabel <- (sum(marriageperstate14$value)/16)-2000 # y-coordinate of label for meanline
+
+ggplot(data = marriageperstate14, aes(x = State, y = value, 
+                                      fill = factor(variable), order = variable)) +  
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  xlab("State") + 
+  scale_y_continuous(breaks = seq(0,85000, 10000), name="Marriages", 
+                     labels=function(x) format(abs(seq(0,85000,10000)), 
+                                               big.mark = "'", scientific = FALSE)) +
+  scale_x_discrete(labels=c("BaWü","Bay","Ber","Bra","Bre","Ham","Hes","Meck","Nie","Nor",
+                            "Rhe","Saa","Sac","SaAn","Sch","Thü")) + # change x-axis labels
+  theme(axis.text.x = element_text(angle = - 50, vjust = 0.9, hjust = 0.1)) +
+  guides(fill=guide_legend(title="season", reverse = T)) +
+  ggtitle("Marriages per state and season \n 2014") +
+  geom_hline(aes(yintercept = (sum(value)/16)), color = "black", linetype = "dashed", 
+             size = 0.5) + # add meanline
+  annotate("text", x = 10, y = meanlabel, label="Mean", color="black", 
+size = 4, hjust = 1) # add text to mean line
+
+
+```
+
+## Case Study
+
+To finish off the chapter, let's pull together everything you've learned to tackle a realistic data tidying problem. The `tidyr::who` dataset contains tuberculosis (TB) cases broken down by year, country, age, gender, and diagnosis method. The data comes from the *2014 World Health Organization Global Tuberculosis Report*, available at <http://www.who.int/tb/country/data/download/en/>.
+
+There's a wealth of epidemiological information in this dataset, but it's challenging to work with the data in the form that it's provided:
+
+```{r}
+who
+```
+
+This is a very typical real-life example dataset. It contains redundant columns, odd variable codes, and many missing values. In short, `who` is messy, and we'll need multiple steps to tidy it. Like dplyr, tidyr is designed so that each function does one thing well. That means in real-life situations you'll usually need to string together multiple verbs into a pipeline. 
+
+The best place to start is almost always to gather together the columns that are not variables. Let's have a look at what we've got: 
+
+* It looks like `country`, `iso2`, and `iso3` are three variables that 
+  redundantly specify the country.
+  
+* `year` is clearly also a variable.
+
+* We don't know what all the other columns are yet, but given the structure 
+  in the variable names (e.g. `new_sp_m014`, `new_ep_m014`, `new_ep_f014`) 
+  these are likely to be values, not variables.
+
+So we need to gather together all the columns from `new_sp_m014` to `newrel_f65`. We don't know what those values represent yet, so we'll give them the generic name `"key"`. We know the cells represent the count of cases, so we'll use the variable `cases`. There are a lot of missing values in the current representation, so for now we'll use `na.rm` just so we can focus on the values that are present.
+
+```{r}
+who1 <- who %>% 
+  gather(new_sp_m014:newrel_f65, key = "key", value = "cases", na.rm = TRUE)
+who1
+```
+
+We can get some hint of the structure of the values in the new `key` column by counting them:
+
+```{r}
+who1 %>% 
+  count(key)
+```
+
+You might be able to parse this out by yourself with a little thought and some experimentation, but luckily we have the data dictionary handy. It tells us:
+
+1.  The first three letters of each column denote whether the column 
+    contains new or old cases of TB. In this dataset, each column contains 
+    new cases.
+
+1.  The next two letters describe the type of TB:
+    
+    *   `rel` stands for cases of relapse
+    *   `ep` stands for cases of extrapulmonary TB
+    *   `sn` stands for cases of pulmonary TB that could not be diagnosed by 
+        a pulmonary smear (smear negative)
+    *   `sp` stands for cases of pulmonary TB that could be diagnosed be 
+        a pulmonary smear (smear positive)
+
+3.  The sixth letter gives the sex of TB patients. The dataset groups 
+    cases by males (`m`) and females (`f`).
+
+4.  The remaining numbers gives the age group. The dataset groups cases into 
+    seven age groups:
+    
+    * `014` = 0 -- 14 years old
+    * `1524` = 15 -- 24 years old
+    * `2534` = 25 -- 34 years old
+    * `3544` = 35 -- 44 years old
+    * `4554` = 45 -- 54 years old
+    * `5564` = 55 -- 64 years old
+    * `65` = 65 or older
+
+We need to make a minor fix to the format of the column names: unfortunately the names are slightly inconsistent because instead of `new_rel` we have `newrel` (it's hard to spot this here but if you don't fix it we'll get errors in subsequent steps). You'll learn about `str_replace()` in [strings], but the basic idea is pretty simple: replace the characters "newrel" with "new_rel". This makes all variable names consistent.
+
+```{r}
+who2 <- who1 %>% 
+  mutate(key = stringr::str_replace(key, "newrel", "new_rel"))
+who2
+```
+
+We can separate the values in each code with two passes of `separate()`. The first pass will split the codes at each underscore.
+
+```{r}
+who3 <- who2 %>% 
+  separate(key, c("new", "type", "sexage"), sep = "_")
+who3
+```
+
+Then we might as well drop the `new` column because it's constant in this dataset. While we're dropping columns, let's also drop `iso2` and `iso3` since they're redundant.
+
+```{r}
+who3 %>% 
+  count(new)
+who4 <- who3 %>% 
+  select(-new, -iso2, -iso3)
+```
+
+Next we'll separate `sexage` into `sex` and `age` by splitting after the first character:
+
+```{r}
+who5 <- who4 %>% 
+  separate(sexage, c("sex", "age"), sep = 1)
+who5
+```
+
+The `who` dataset is now tidy!
+
+I've shown you the code a piece at a time, assigning each interim result to a new variable. This typically isn't how you'd work interactively. Instead, you'd gradually build up a complex pipe:
+
+```{r, results = "hide"}
+who %>%
+  gather(code, value, new_sp_m014:newrel_f65, na.rm = TRUE) %>% 
+  mutate(code = stringr::str_replace(code, "newrel", "new_rel")) %>%
+  separate(code, c("new", "var", "sexage")) %>% 
+  select(-new, -iso2, -iso3) %>% 
+  separate(sexage, c("sex", "age"), sep = 1)
+```
+
+### Exercises
+
+1.  In this case study I set `na.rm = TRUE` just to make it easier to
+    check that we had the correct values. Is this reasonable? Think about
+    how missing values are represented in this dataset. Are there implicit
+    missing values? What's the difference between an `NA` and zero? 
+
+1.  What happens if you neglect the `mutate()` step?
+    (`mutate(key = stringr::str_replace(key, "newrel", "new_rel"))`)
+
+1.  I claimed that `iso2` and `iso3` were redundant with `country`. 
+    Confirm this claim.
+
+1.  For each country, year, and sex compute the total number of cases of 
+    TB. Make an informative visualisation of the data.
+

@@ -1,0 +1,733 @@
+---
+title: "Intro to R"
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation: 
+    highlight: pygments
+    widescreen: yes
+---
+<style>
+
+.footer {
+    font-size: 16pt;
+    color: Black;
+    font-family: 'Helvetica'
+    content: attr(label);
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align:center;
+    bottom: 10px;
+    line-height: 1.9;
+    display: block;
+}
+
+</style>
+
+<div class="footer" style="margin-top;font-size:120%;"> 
+Data Analysis Using R - `r Sys.Date()` </div>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 3)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+
+vector <- c(1:10, NA, NA, NA,  3, "marc")
+vector
+missing <- is.na(vector)
+
+typeof(missing)
+
+missing_num <- as.numeric(missing)
+missing_num
+
+sum(missing_num)
+sum(missing)
+
+sum(is.na(vector))
+vector
+
+sum(vector)
+
+```
+
+## R is case sensitive
+
+*_Important note: R is case-sensitive, meaning that it will matter whether you use capital or lower case, keep this in mind if you get a cryptic warning or error!_*
+
+## Help getting started with R
+
+Writing R code can be challenging and espacially in the beginning you will get mind-boggling errors. R is extremely picky about capitals and every opening `(`, `[` or `{` must be matched by a closing `)`, `]` or `}`. 
+
+Mind that `.` is the decimal placeholder!  
+
+If you're stuck, try the help. You can get help about any R function by running `?function_name` and `?package_name` or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
+
+Another great tool is Google: trying googling the error message, as it's likely someone else has had the same problem, and has gotten help online.
+
+## Statistics and R
+
+ * This course does not cover statistical applications of R. 
+ * Allbeit that we will look at an example of a linear regression later on. 
+ * Nowadays R is a versatile language and can be used for various applications, but it was originally designed as a language for performing statistical analyses. 
+ * This is why very many statistical applcations are available for R. 
+ * To start learning about statisics and R, I can highly recommend the book "Discovering Statistics Using R" by Dr. Andy Field: https://uk.sagepub.com/en-gb/eur/discovering-statistics-using-r/book236067%20
+
+## For more on learning R in the context of statistics: start e.g. with:
+
+http://www.statsteachr.org/ or
+
+https://www.coursera.org/learn/statistical-inference/home/welcome or
+
+https://www.youtube.com/watch?v=ACWuV16tdhY&index=21&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU and
+
+https://www.youtube.com/watch?v=kvmSAXhX9Hs&index=29&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU 
+
+and the rest of Mike Marin's lectures, that are also a really great way to start learning R.
+
+## Packages
+
+## List of available CRAN packages 
+http://cran.r-project.org/web/packages/available_packages_by_date.html
+
+For the course we use `tidyverse` a lot
+```{r}
+# install.packages("tidyverse")
+library(tidyverse)
+```
+The `tidyverse` (in itself an R-package) is actually a collection of packages!
+See: http://tidyr.tidyverse.org/ for more info
+
+## Biological Packages
+For Biological application go to http://www.bioconductor.org
+
+Installing Bioconductor packages is different from CRAN packages
+example: `{affy}` 
+
+Each Bioconductor package has a landing page:
+
+https://www.bioconductor.org/packages/release/bioc/html/affy.html
+
+```{r, eval=FALSE}
+## installing `{affy}` package
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("affy")
+
+## loading affy package and the vignettes pages of this package
+# library(affy)
+# browseVignettes("affy")
+```
+
+## Vignettes
+Vignettes are long explanations and demos of a package. Commonly, a vignette contains examples and a workflow that shows how the package can be used and which (research) questions can be adressed with the functions and datasets in the package. It usually is a good place to start for examples. It also shows the so-called dependence of a package: it explains which other packages you would need and how the data should look to be able to work with the package the vignette belongs to. 
+
+## Getting Help for R functions and packages
+```{r, eval=FALSE}
+#install.packages("dplyr")
+library(dplyr)
+library(ggplot2)
+??dplyr
+??ggplot2
+?mean
+??mean  # goes to the page with functions related with '.mean.'
+apropos("mean") # search on more options of or alternatives for a certain function
+```
+
+## Examples and demos on functions and packages
+```{r, eval=FALSE}
+example(mean) # to see a worked example
+demo(graphics) # demonstration of R functions
+```
+
+## Functions; naming arguments
+```{r, error=FALSE, message=FALSE, warning=FALSE}
+# ?rnorm
+hist(rnorm(100))
+
+seed <- c(1:4)
+
+set.seed(seed)
+q <- rnorm(n = 10000, mean = 20, sd = 2)
+hist(q)
+## no naming
+# set.seed(1234)
+qq <- rnorm(10000, 20, 2)
+all(q == qq)
+```
+
+__**Write code for humans, be explicit!**__
+
+# Data objects
+
+## Vectors
+R is an object oriented language: meaning you can create and work with (manipulate/index/access) objects. Vectors are R's elementary objects and 
+come in different flavours:
+
+ - Nummeric vector: contains only numbers: decimal separator in R is "." (decimal point) and not "," (decimal comma) as is common in the English language. 
+ - Character vector: contains only "words", but words can also be numbers: "23" or other items "100%" or "$2,000.00" 
+ - An integer vector: an nummeric series: 1, 2, 3 is an integer of length 3.
+ - Logical: logical vectors contain only two values: "TRUE" and/or "FALSE"
+ - Mixed: Vectors do not need to be of one type. They can be mixed. They can only be of one class, so this operation will induce **_coercion_**.
+
+## Numeric vectors
+```{r}
+c(2,8,5) 	# combines its arguments to form a vector
+nv_1 <- c(2,8,5) # assignment statement
+nv_1 # view the content of the object "nv_1"
+```
+
+## Class tells you about the classification
+```{r}
+nv_2 <- c(8.4,5.6,10.1,13.1,2.5,7.8,15.2,3.8,20.9)
+nv_2
+class(nv_2)
+```
+
+# Number notations and rounding
+
+## Scientific notations 
+```{r}
+big_numbers <- rnorm(10, mean = 10000000, sd = 2)
+big_numbers %>% formatC(format = "e", digits = 2)
+
+number <- c(1000)
+formatC(number, format = "e", digits = 3)
+
+large_number <- c(2.55858868688584848)
+
+
+round(large_number, digits = 3)
+
+
+sqrt(large_number * 1000 /200 * 2^6)  
+
+
+```
+
+## Rounding numbers
+```{r}
+small_numbers <- runif(10, min = 0.001, max = 0.1) %>% print()
+small_numbers %>% round(digits = 2)
+```
+
+## Character vectors
+```{r}
+cv <- c("this is", "an", "example of", "1", "character", "vector", "with length:", "length(cv)")
+cv
+sum(cv)
+
+length(cv)
+class(cv)
+```
+
+## Integers
+```{r}
+int <- as.integer(1:5)
+int
+length(int)
+class(int)
+
+example_int <- c(1.4, 1.6, 7.9)
+typeof(example_int)
+
+as.integer(example_int)
+
+
+```
+
+## Logical vectors
+```{r}
+lv <- c(TRUE, FALSE, TRUE, TRUE)
+lv
+class(lv)
+## logical vectors can also be converted to numeric vectors
+nlv <- as.numeric(lv)
+nlv
+## note that coercion of a logical to a numeric vector changes the "TRUE" value to 1 and the "FALSE" value to 0
+```
+
+## Manipulating vectors
+You can add/subtract/devide or use other arithmetic functions on numeric vectors
+```{r} 
+a <- c(1,3,5,7,9)
+b <- c(2,4,6,8)
+
+z1 <- a - b
+z1
+
+
+z2 <- b - a
+z2
+z3 <- a / b
+z3
+```
+
+## Apply functions to a vector 
+```{r}
+z4 <- sum(a)
+z4
+z5 <- max(a) - max(b)
+z5
+```   
+
+## Series in base-R
+```{r}
+numbers_times <- rep(1:4, times = 4) %>% print()
+numbers_each <- rep(1:4, each = 4) %>% print()
+```
+
+## Series in `{tidyverse}`
+```{r}
+library(modelr)
+x <- rcauchy(100)
+hist(x)
+```
+
+## More `{tidyverse}` series
+```{r}
+seq_range(x, n = 10)
+seq_range(x, n = 10, trim = 0.1)
+seq_range(x, by = 1, trim = 0.1) 
+```
+
+## Make pretty `{tidyverse}` sequences
+```{r}
+y <- runif(100)
+seq_range(y, n = 10)
+seq_range(y, n = 10, pretty = TRUE)
+seq_range(y, n = 10, expand = 0.5, pretty = TRUE)
+```
+
+## Indexing with [...]
+You can get the individual items of a vector by using the index `[]`
+```{r}
+x <- c(8, 5, 10, 13, 2, 7, 15, 3, 20, 8)
+x # create vector with 10 variables
+length(x)
+mode(x) # information on data mode (numeric, character, logic)
+
+```
+
+## Using the index
+```{r}
+x
+x[3] ## creating a subset by indexing:
+x[c(3, 4, 7)] # apply a simple function
+
+mean(x[c(2,5)]) # example of a function
+```
+
+## Using the vector index `[]` some more
+```{r}
+i <- 5
+x[c(i, i+2)] # (i = 5 & i = 7), i-th element
+x[-2] # all but the ith (second) element
+x[3:5] # element 3 to 5
+x[x > 9] # all greater than some value
+```
+
+## Plotting and filtering elements from a vector
+```{r}
+set.seed(1234)
+h <- rnorm(n = 1000, mean =  0, sd = 2)
+plot(h)
+h
+max(h)
+min(h)
+
+
+hist(h[larger_than_0 <- h > 0 | h < -5], main = "title", xlab = "units",
+     ylab = "units")
+
+
+
+
+
+```
+
+## Creating a logical index and apply it to a plot
+```{r}
+ind <- h < 0
+h[ind] %>% plot()
+```
+
+## Histogram
+```{r}
+hist(h, breaks = 20)
+```
+
+## Truncate the distribution at -4 and 4
+```{r, fig.align='center', fig.height=4, fig.width=8}
+index <- h > -4 & h < 4
+par(mfrow = c(1,2))
+hist(h, breaks = 20)
+hist(h[index], breaks = 20)
+```
+
+## Concatenate or `c()` command
+The `c()` function can be used to __concatenate__, __combine__ or __create__ objects in R 
+```{r}
+pp <- c(x, 0, x)
+pp 
+sum(c(pp, c(1:5), c(1,2, c(1:10)))) # sum of elements in the 'concatenated' vector
+```
+
+## Plotting models
+```{r} 
+c <- c(1:7,9,11) # dependent variable (response)
+d <- c(1:9) # independent variable (terms)
+```
+
+## Performing a linear correlation (response ~ terms)
+```{r}
+m1 <- lm(c ~ d)
+m1$coefficients
+```
+
+## Model summary
+```{r}
+summary(m1)
+```
+
+## Make a plot 
+```{r}
+plot(d, c, ylim=c(0,13))
+```
+
+## Plotting the model
+```{r}
+plot(d, c, ylim=c(0,13), abline(m1), 
+     main = "Regression Example",
+     xlab = "Terms", ylab = "Response")  #abline plots the correlation model in the graph
+```
+
+## ggplot2 version
+During the course we will mostly use the `ggplot2` plotting system!
+ggplot2 works with dataframes, so we first need to create one
+```{r} 
+tbl_df <- tibble(x = d, y = c)
+```
+
+## ggplot code
+```{r, results='hold'}
+ggplot(data = tbl_df, aes(x = x, y = y)) +
+  geom_point(colour = "darkred", size = 3) +
+  geom_smooth(method = "glm", se = TRUE, formula = y ~ x, colour =         "darkblue") +
+  ggtitle("Regression Example") + xlab("Terms") + ylab("Response")
+```
+
+## Combine the two in one slide
+```{r, echo=FALSE, results='hold'}
+source(file.path(root, "code", "panel_ggplot2_base_combined.R"))
+```
+
+## Handeling character vectors
+What happens if you use arithmetic functions on character vectors and numeric vectors?
+```{r, eval=FALSE}
+w <- c("1", "2")
+u <- c("a", "b", "c")
+z6 <- w-y  
+z7 <- u+w
+``` 
+This does not work because the vectors are of different type. We can use the paste command for this
+```{r}
+w <- c("1", "2")
+u <- c("a", "b", "c")
+z8 <- paste(u,w, sep = "_")
+z8 ## because w is shorter than u, it get's recycled over u
+```
+
+## Let's clean up the workspace
+```{r, eval = FALSE }
+rm(list=ls())
+root <- find_root_file(criterion = is_rstudio_project)
+## Note: never use this in code that is meant for others!!!
+```
+
+*_The above is an effective way to clear all the items in the Global Environment, but is is not very friendly to use this in code you share with others: can you think of why?_*
+
+## Data Structures: Lists
+
+When using R for data analysis you will most likely work with data in a matrix, an array, a list or even more likely: a dataframe.
+
+A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represnet different variables.  
+
+The dataframe and the list are the most widely used datastructures when considering experimental Biological data. 
+
+## Create a List
+```{r}
+lst <-list(first_names = c(male = "Fred", female = "Mary"), no.children = 3, child_ages=c(4,7,9),
+child_names = c("Suzy", "Marvin", "Jane"), address = c("Pandmonium Alley 114, Chaosville"),
+marital_status = TRUE)
+length(lst) # number of elements in the list
+head(lst, 2)
+```
+
+## Accessing items in a list
+```{r}
+lst[[1]] # 1st element of List
+lst[[3]][2] # second item of third element
+names(lst) # named elements in this list
+lst$child_names # pull "named" elements from a list using `$` operator
+```
+
+## `str()` gives you the structure of an object
+```{r}
+str(lst) # display structure of lst
+``` 
+The new RStudio Interface also enables interactive exploration of R-objects (demo)
+
+## Selecting single elements in a list
+To select a single element from a variable in a list
+```{r}
+lst$child_ages[3] 
+lst[[6]][2] # returns the value of the second element for your variable
+``` 
+
+## Looping over lists
+```{r}
+purrr::map(lst, is.na)
+```
+## The Dataframe
+The dataframe is the most widely used data structure in the context of experimental biology and chemistry. **Remember "Tidy data!"**   
+
+## Creating a data frame from individual vectors
+```{r}
+people_df <- data.frame(age=c(24, 27, 19, 34),      
+                       sex=c("F","F","M", "M"), 
+                       weight=c(64, 55, 80, 70),
+                       names = c("Christa", "Suzan", 
+                                 "Matt", "John"))
+head(people_df)
+``` 
+
+## Or the 'tidyverse' way
+```{r}
+people_tbl <- tibble::tibble(age=c(24, 27, 19, 34),      
+                       sex=c("F","F","M", "M"), 
+                       weight=c(64, 55, 80, 70),
+                       names = c("Christa", "Suzan", 
+                                 "Matt", "John"))
+people_tbl
+```
+
+## Viewing the contents of a dataframe
+```{r}
+summary(people_df)
+table(people_df)
+
+head(people_df) 			# gives the content of the data frame
+names(people_df) 
+str(people_df)
+
+people_df$age # gives the content of the variable "age" from the data frame ""
+
+``` 
+
+## Using index on dataframes
+Using the index "[]" on a dataframe is a bit tricky. The dataframe always consists of rows and columns. Indexing a dataframe goes like:
+
+`dataframe[row number(s), column number(s)]`
+
+```{r}
+people_df$age[1] 	# first element of this vector
+people_df[,2] 	# content of 2nd variable (column) which is a character vector -> factor
+people_df[1,] 	# content of the 1st row
+# multiple indices
+people_df[2:3, c(1,3)] # remember to use c
+
+```
+
+## Import data into R
+```{r}
+library(tidyverse)
+path_to_gender_age_data <- file.path(root, "data", "gender.txt")
+gender_age <- read_delim(path_to_gender_age_data,
+                         delim = "/")
+```
+
+## Inspecting the dataframe
+```{r}
+# getting the first few rows 
+head(gender_age)
+# getting information on the variable, the dimensions
+str(gender_age)
+# selecting a variable
+gender_age$gender
+gender_age$age
+gender_age[1:6,2]
+``` 
+
+## read_csv
+CSV is a format of a data file that uses commas or semicolons as separators for the columns.
+
+```{r}
+library(readr)
+skin <- read_csv(paste0(root, "/data/skincolumns.csv")) 
+str(skin)
+```
+
+## Inspecting the skin dataframe
+```{r}
+head(skin)	 # content of the data frame
+dim(skin)
+attributes(skin)
+summary(skin)
+## ?read_csv 	 # help on the function
+```
+
+## `skin` dataset contains an NA, some functions do not work with NAs:
+```{r}
+mean(skin$`Genotype A`)
+mean(skin$`Genotype B`)
+
+# to remove the NA
+skin_noNA <- na.omit(skin)
+mean(skin_noNA$`Genotype B`)
+``` 
+
+## Smoking example with multiple variables
+Create data frame with 4 variables:
+gender, 
+smoke, 
+age,
+weigth
+
+## Create individual vectors
+```{r}
+set.seed(6000) # set it at the same number, then we will all produce the same output
+gender<-c(sample(c(1,2), size=1000, replace=TRUE))
+smoke<-c(sample(c(1,2), size=1000, replace=TRUE))
+age<-c(sample(c(1,2,3), size=1000, replace=TRUE))
+weight<-round(rnorm(1000, mean=65, sd=10),1)
+smoking <- data.frame(cbind(gender, smoke, age, weight))
+```
+
+## `head(x, ...)`
+```{r}
+head(smoking, 5)
+smoking[1:5,]
+``` 
+
+## Replace numbers by descriptive labels 
+```{r}
+# replace numbers by characters
+smoking$genderf=factor(smoking$gender, labels=c("female","male"))
+table(smoking$genderf,smoking$gender)
+smoking$smokef=factor(smoking$smoke, labels=c("Y","N"))
+table(smoking$smokef,smoking$smoke)
+smoking$agecf=factor(smoking$age, labels=c("A: <15","B: 15-30","C: >30"))
+table(smoking$agecf,smoking$age)
+summary(smoking)
+
+``` 
+
+## Subsetting data frame; the easier {dplyr} way
+```{r}
+library(tidyverse)
+names(smoking)
+smoking_male <- smoking %>% filter(genderf == "male")
+smoking_age_gender <- smoking %>% select(genderf, agecf)
+
+```
+
+## Or the base-R way
+```{r}
+library(tidyverse)
+names(smoking)
+# create a logical index
+smoking_male_index <- smoking[, "genderf"] == "male" 
+smoking_male <- smoking[smoking_male_index, ]
+# slecting only age and gender
+smoking_age_gender <- smoking_male[, c(1,3)]
+```
+
+## Summarizing data
+For summarizing data there are many ways in R (as is the case with many operations). I find the dplyr way the most intuitive. Using dplyr has the advantage that you can easily built on existing function and examples, because the code is faily easy to understand.
+
+## The pipe or %>% operator
+
+ * One thing that makes dplyr great is that it works with the `%>%` symbol. Which is in programming jargon also called the "pipe" symbol.
+ * The pipe symbol takes the previous result of an operation and put it in the next.
+ * The pipe symbol can replace the use of annoying round brackets: or "(parentheses)" 
+
+## Example 
+If we want to calculate the sum, of the square root of the mean, of two nummeric vectors (each of length = 1000) we could do:
+```{r}
+library(dplyr)
+set.seed(12345)    
+zzz <- sqrt(mean(x <- rnorm(10000, mean = 34, sd = 2))) +
+sqrt(mean(y <- rnorm(10000, mean = 23, sd = 4)))
+zzz
+```
+
+The above is almost impossible to read because of all the round brackets, note the closing brackets: 3 of them!!
+
+## let's try the dplyr way with the %>% (pipe) operator
+```{r}
+set.seed(12345)
+qqq <- rnorm(10000, mean = 34, sd = 2) %>% 
+  mean() %>% 
+  sqrt() + rnorm(10000, mean = 23, sd = 4) %>% 
+  mean() %>% 
+  sqrt()
+qqq
+
+zzz == qqq
+```
+
+The dplyr way is a lot better is it not? Do you get what the above (dplyr-way) lines do?
+
+## The dplyr way explained 
+ 1. the result of the fist vector (1000 random numbers, with mean of 34 and a sd of 2 is piped into the function mean, which calculates the mean of these 1000 numbers (which will be around 34)
+ 2. From that the square root is taken by piping the mean in the function sqrt()
+ 3. The result of the firt vector is added to the calculation of the second vector (which is done the same way as the first).
+ 4. The result is qqq
+ 5. Is qqq equal to zzz, which we calculated the "old-fashioned" mathematical way? YES! 
+
+## Let's apply the above to our smoking dataset
+
+ * Usually, if we want to make a graph we need some sort of summarizing variable that indicates wat is going on, e.g. a group mean and standard deviation.
+
+ * From the smoking dataset we will genrate a new dataframe with average weight, grouped by gender, age and grouped by smoking or non smoking. We will use dplyr verse to do so.
+
+ * I will also show you how to sort the data, let's say to decreasing weight, by using the dplyr function 'arrange'. 
+
+## Summary of the smoking data
+```{r}
+## it is handy to have the names of the dataset variables at hand when writing pipes
+
+names(smoking)
+str(smoking)
+```
+
+## Example `pipe`
+```{r}
+smoking_weight <- smoking %>% select(genderf, smokef, weight, agecf) %>%
+  group_by(genderf, smokef, agecf) %>% summarise(mean_weight = mean(weight)) %>%
+  arrange(desc(mean_weight))
+
+head(smoking_weight)
+```
+
+## Looking in detail at the pipe
+
+Let's look at what is going on above.
+
+The smoking_weight dataset contains newly created, more descriptive denominators, we will use those. 
+ 
+ 1. The first step is to inspect the dataframe to see if the grouping variables are set to "factor" 
+ 2. The second step is to select the proper variables to work with
+ 3. Than the data is grouped by the genderf, agecf and by the smokef variables
+ 4. Summarise creates a new variable `mean_weight` that is what it says: the mean weight for the groups defined.
+ 5. Finally, the data is sorted, according the newly created mean_weight variable, in decending order "(dec(mean_weight))". If we want ascending order we can just use arrange(mean_weight). Arrange has the default to order the variable in ascending order.

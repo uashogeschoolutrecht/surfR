@@ -1,0 +1,361 @@
+---
+title: "dplyr - Exercise"
+author: "Marc A.T. Teunis"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(results = 'hide',
+                      fig.show = 'hide',
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      error = FALSE)
+```
+
+```{r, root_1, echo=TRUE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+__Write an Rmd file, containing code chunks (if applicable) and answer all the questions below. Store the file in a folder called: "./answers_exercises" in your course project folder. Give this file the same name as the title of the current Rmd file__
+
+## The dplyr package is great for manipulating data
+
+ * Select variables (columns)
+ * Filter observaions (rows)
+ * Change the order of rowns and columns 
+ * Add new variables 
+ * Group data / slice or "roll-up" data
+ * Subset data
+ * Summarize data
+ 
+## dplyr has a few main "verbs"
+ 
+ * `select()` to select columns/variables
+ * `filter()` to select rows/observations
+ * `mutate()` to create new variables
+ * `group_by` to group that data
+ * `summarize()` to calculate summary values (e.g. `mean()` or `sd()`)
+ * `arrange()` to sort observations. If you want descending use `desc()` within the `arrange()` call like `arrange(desc(variable_for_which_to_sort))` 
+ * `count()` to count items in a vector or column
+ 
+## The exercise data
+
+For this exercise we use the "heights" dataset.
+This dataset contains heights, weights, income and ethnicity information. The information for the variables that are needed for this exercise are in the file "annotations_height.txt".
+
+It was downloaded from:
+
+https://github.com/rstudio/webinars/tree/master/15-RStudio-essentials/4-Projects
+
+Load the data with the following code
+```{r, echo=TRUE}
+library(tidyverse)
+heights_file <- file.path(root, "data", "heights.RDS")
+heights <- read_rds(path = heights_file)
+head(heights)
+heights
+heights_tib <- as_tibble(heights)
+
+```
+
+## Data inspection
+
+1A) Inspect the data with the `head()` and `tail()` function.
+The datset contains `r nrow(heights)` observations.   
+
+ - What types of variables are present in the data.
+ - Focus on the variables `id` `income`, `height`, `weight`, `sex` and `race`
+ 
+1B) Call `summary` on the data. What do you notice when you look at the max. and min. value for the `height`. For nicer printing you can use `pander::pander()`
+
+```{r}
+library(pander)
+pander(summary(heights))
+```
+
+1C) Are there any missing values in the data? Determine the number of missing values
+```{r}
+sum(is.na(heights))
+```
+ 
+## Selecting variables with {dplyr} and missing values
+
+Subsetting data with the {dplyr} verbs `select()` and `filter()` is convenient for creating slices of the data that are of interest.
+
+For this exercise we will use the variables: 
+
+`id`, `income`, `height`, `weight`, `sex` and `race`
+
+2A) Generate a subset of the `heights` dataframe containing only these variables. Call this new dataframe `heights_selected`
+ 
+ - Use `dplyr::select()`
+ - Use `%>%` 
+ - To find NAs, use `sum(is.na(dataframe))`
+
+```{r, answer_2a}
+heights_selected <- heights %>%
+  select(id, income, height, weight, sex, race)
+```
+
+2B) Check the amount of NAs that you have left in the dataset
+```{r, answer_2b}
+sum(is.na(heights_selected))
+```
+
+2C) To complete the data-inspection and do a bit of cleaning we can look at the records in the `heigths_selected` dataset that are complete. This means, for which we have data points for all 5 variables.
+
+use the function `complete.cases()` from the {stats} package. Look at `?complete.cases()` to see how to use this function. Create a new data frame with complete case that you call `heights_complete`
+
+ - Remember that you can use data.frame[rows, columns] to subset a dataframe with a logical vector
+ 
+```{r}
+library(stats)
+complete_cases <- complete.cases(heights_selected) 
+heights_complete <- heights_selected[complete_cases,] 
+
+## or
+
+
+```
+
+2D) How many NAs are present in the `heights_complete` dataset that you just created under 2C? What did you expect?
+```{r}
+sum(is.na(heights_complete))
+```
+
+## Filtering
+
+ - For the next assignment you can use the `filter()` command from {dplyr}
+
+3A) Filter all people that have a weight of over 200 lbs.
+```{r}
+heights_complete <- tibble(heights_complete)
+
+over_200 <- heights_complete %>% 
+ filter(weight > 200)
+
+over_200 <- filter(heights_complete, weight > 200)
+
+```
+
+3B) What is the most frequent ethnicity in the group of people that have a weight over 200 lbs   
+
+ - Think about how you can answer this question: you want to have some sort of tabular summary! Discuss with your neighbour. And/or look on the internet. 
+```{r}
+
+haviest_race <- over_200 %>%
+    summarise(frequency = count(weight)) %>%
+  arrange(desc(mean_weight))
+haviest_race
+
+summary <- summary(over_200)
+summary
+str(summary)
+table(summary[, 6])
+
+
+# so the answer is "other", which is not surprising
+```
+
+3C) Filter to extract the top 5 tallest hispanic males in the dataset.  
+What is their respective weight? 
+What is their average height?
+
+ - This one is already a bit more complicated:
+ - Use `%>%`
+ - Use `filter()`
+ - Use `arrange()` to sort in descending order
+
+```{r}
+# filter for 'hispanic' 'males'
+tallest_hispanic_men <- heights_complete %>%
+  filter(race == "hispanic" & sex == "male") %>%
+# now sort the rows in descending order
+  arrange(desc(height))
+# select only the first five rows
+five_tallest_hispanic_men <- tallest_hispanic_men[c(1:5), ]
+
+# all weights: 
+five_tallest_hispanic_men$height
+
+
+# mean height
+mean_height_five_tallest_hispanic_men <- 
+mean_height_five_tallest_hispanic_men
+
+  mean(five_tallest_hispanic_men$height)
+
+  mean_height_five_tallest_hispanic_men
+
+```
+
+3D) Find the two tallest women in the data. See if you can find two men that match the weight and heigt of these women.
+```{r}
+rank_women <- heights_complete %>%
+  filter(sex == "female") %>%
+  arrange(desc(height))
+
+(two_tallest_women <- rank_women[c(1,2), ])
+
+
+match_1 <- heights_complete %>%
+  filter(sex == "male" & 
+         weight == two_tallest_women$weight[1] & 
+         height == two_tallest_women$height[1])
+
+match_1
+
+match_2 <- heights_complete %>%
+  filter(sex == "male" & 
+         weight == two_tallest_women$weight[2] &
+         height == two_tallest_women$height[2])
+match_2
+```
+
+## Creating new variables
+The units of the data in the `heights` dataset is somewhat difficult to interpret because of the use of non-SI notation (so basically non-scientific units). The weights are in `lbs` or also called pounds and the height is in `inches`.
+
+ * 1 inch = 2.54 cm
+ * 1 lbs = 0.45359237 kg
+
+4A) Convert the `height` and the `weight` variable to SI units (so meters, and kg, respectively)
+ 
+ Add the new variables to the exsting `heigths_complete` dataset. Call the new columns: `height_m` and `weight_kg`
+ 
+  - Use `dplyr::mutate()` to solve this question 
+  - Round the `height_m` and `weight_kg` to decimals that make sense
+ 
+```{r}
+heights_complete <- heights_complete %>%
+  mutate(height_m = (height*2.54/100),  
+         weight_kg = weight*0.45359237)
+
+heights_complete
+
+
+heights_complete$height_m <- round(heights_complete$height_m, 2)
+heights_complete$weight_kg <- round(heights_complete$weight_kg, 1)
+
+head(heights_complete) 
+```
+
+## Body-mass index
+The body-mass index or BMI can be calculated from the weight and the height of a person. 
+ 
+ The formula for determining the BMI is
+ 
+ Bodyweight in kilograms divided by height in meters squared
+ 
+ or:
+ 
+#### $BMI=\frac{bodyweight(kg)}{height(meters)^2}$
+ 
+4C) Calculate a new variale called `bmi` for the `heights_complete` dataset 
+```{r}
+heights_complete <- heights_complete %>%
+  mutate(bmi = (weight_kg / height_m^2))
+head(heights_complete)
+ 
+```
+
+## Grouping and summarizing
+
+```{r}
+names(heights_complete)
+
+
+heights_summary <- heights_complete %>%
+  select(-id) %>%
+  group_by(race, sex) %>%
+  summarise(mean_height_in = mean(height), 
+            mean_weight_lbs = mean(weight), 
+            mean_height_m = mean(height_m),
+            mean_weight_kg = mean(weight_kg), 
+            mean_bmi = mean(bmi), 
+            mean_income = mean(income)) %>%
+  arrange(desc(mean_income))
+
+heights_summary[1, "race"]
+
+head(heights_summary)
+
+```
+
+
+
+
+When we have multiple observations per unit or groups of units, it makes sense to be able to group the data accordingly.
+
+Here we need to take a closer look at `dplyr::group_by` and `dplyr::summarize` to group, summarize and generate new summary variables of the (cleaned) data. 
+
+5A) Summarize the data.
+
+ - Group the data by `race`, and `sex`, drop the `id`, variable
+ - Call the new summarized dataframe: `heights_summary`
+ - Make a `summary` dataframe with new summary variables with the `dplyr::summary()`function 
+ - Call the new summary variables `mean_height_in`, `mean_weight_lbs`, `mean_height_m`, `mean_weight_kg`, `mean_bmi` and `mean_income`
+ - Rank (`dplyr::arrange()`) the data according income from high to low (`arrange(desc(variable_for_which_to_rank)`)
+ 
+```{r} 
+names(heights_complete)
+heights_summary <- heights_complete %>%
+  select(income:bmi) %>%
+  group_by(race, sex) %>%
+  summarise(mean_height_in = mean(height),
+            mean_height_m = mean(height_m),
+            mean_weight_lbs = mean(weight),
+            mean_weight_kg = mean(weight_kg),
+            mean_bmi = mean(bmi),
+            mean_income = mean(income)) %>%
+  arrange(desc(mean_income))
+
+
+```
+
+5B) Which race has the highest income?
+ 
+```{r} 
+names(heights_complete)
+heights_summary <- heights_complete %>%
+  select(income:bmi) %>%
+  group_by(race, sex) %>%
+  summarise(mean_height_in = mean(height),
+            mean_height_m = mean(height_m),
+            mean_weight_lbs = mean(weight),
+            mean_weight_kg = mean(weight_kg),
+            mean_income = mean(income)) %>% 
+  arrange(desc(mean_income)) 
+```
+
+5C) Is there a difference between males and females. For which race is this difference the biggest?
+
+```{r}
+males <- heights_summary %>%
+  filter(sex == "male") %>% 
+  select(mean_income, race) %>%
+  arrange(desc(race))
+
+females <- heights_summary %>%
+  filter(sex == "female") %>%
+  select(mean_income, race) %>%
+  arrange(desc(race))
+
+difference <- as_tibble(cbind(males, females)) 
+difference
+
+names(difference) <- c("mean_income_m", "race_m", "mean_income_f", "race_f")
+names(difference)
+# str(difference)
+
+difference %>%
+  mutate(delta_income = (mean_income_m - mean_income_f)) #%>%
+  #  arrange(delta_income)
+```
+

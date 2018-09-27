@@ -1,0 +1,169 @@
+---
+title: 'Exercise - "Hello World!"'
+author: "Marc A.T. Teunis"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    css: ~/hp_r_course/exercises/exercises_style.css
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+# knitr options
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning=FALSE,                                                             message=FALSE, 
+                      error=FALSE, 
+                      tidy = TRUE#, 
+                      #results = 'hide',
+                      #fig.show = 'hide'
+                      )
+```
+
+## Loading packages
+```{r packages, echo=TRUE, warning=TRUE, message=TRUE, results='markup'}
+library(tidyverse)
+library(stringr)
+```
+
+## Hello World!
+Traditionally, "Hello World!" is a placeholder for the first steps in a new programming language or environment. In oder to learn some of the tools that you will be frequently using thoughout the course we will perform a small "Hello World!" exercise.
+
+## Print to the console
+One of the easiest ways to investigate the contents of an object in R is to print it to the console. For this we will logically use the print function. Try the following code now:
+
+```{r print, echo=TRUE, results='markup'}
+character_string <- c("Hello World!")
+print(character_string)
+```
+ 1. What happens if you run `character_string` as a single command in the console?
+
+## Paste things together
+Sometimes you want to paste strings or other objects, like vectors together. R has two functions: `paste` and `paste0`. Here you will learn the difference.
+
+```{r, echo=TRUE, results='markup'}
+hello <- c("Hello")
+world <- c("World!")
+this_is <- c("This is")
+one <- c(1)
+character_vector <- c("character vector;")
+
+sentence <- paste(this_is, one, character_vector, 
+                  hello, world, sep = " ")
+sentence
+```
+2. What happens if you change the function `paste` above to `paste0` in the chunk above? Try it now.
+
+## Object class and length
+To view the class of an object and the number of items in the object use the `class` and `length` functions.
+```{r, echo=TRUE, results='markup'}
+class(sentence)
+length(sentence)
+```
+
+## R objects can contain multiple things
+
+Here we show that R objects (e.g. vectors, data frames, lists) can obviously contain multiple things. At the same time you will get an idea on how to construct them.
+
+## Construct a list
+A list in R can contain items of the same class. If you want to store items in a list that are not of the same class, they are coerced to the same class.
+
+```{r, echo=TRUE, results='markup'}
+one <- as.numeric(one)
+one
+list_hw <- as.list(c(this_is, one, 
+                     character_vector, hello, world))
+head(list_hw)
+
+list_hw[[5]]
+class(list_hw[[2]])
+```
+
+## Selecting items, indexing
+ 3. How do you select the second item in the list? And the third letter of the fifth item? Use the function `substr`. Use `?substr` to view help on this function.
+ 
+```{r, echo=TRUE, results='markup'}
+# answer:
+list_hw[[2]]
+x <- list_hw[[5]]
+substr(x, start = 3, stop = 3)
+```
+
+## Construct a vector with multiple items
+A vector can contain only one class of items.
+```{r, echo=TRUE, results='markup'}
+vector_hw <- as.vector(c(this_is, one, 
+              character_vector, hello, world))
+length(vector_hw)
+```
+
+ 4. What is the class of the item `one` in this vector? What happened
+
+## Construct a dataframe
+The dataframe is one of the most important construct for storing data. A dataframe, that can hold different types of variables, is probably the the object 
+you will be working with frequently when working with data.   
+Variables in a dataframe can be of different class. 
+
+```{r, echo=TRUE, results='markup'}
+frame_hw <- as_tibble(vector_hw) %>%
+  mutate(nchar = nchar(vector_hw))
+head(frame_hw)
+```
+ 5. Can you guess what the operator `%>%` does?
+
+ 6. Can you imagine what the part `%>% mutate(nchar = nchar(vector_hw)` above does? 
+
+## Accessing variables in a dataframe
+Variables are really vectors. To access the variables we can use `$` as the operator, or `[rows, columns]` as an indexer
+
+## The `$` operator
+With the `$` you can access a datframe on the basis of the names of the variables. The names can be viewed by using the `names` function.
+```{r, echo=TRUE, results='markup'}
+names(frame_hw)
+frame_hw$value
+frame_hw$nchar
+names(frame_hw) <- c("words", "nchar")
+head(frame_hw)
+```
+
+## The `[]` index operator
+With the single double square brackets we can access a vector, dataframe or matrix.  
+```{r, echo=TRUE, results='markup'}
+frame_hw[c(1:3),1]
+frame_hw[1,]
+frame_hw[,1]
+frame_hw$words[4]
+```
+ 7. Look carefully at the last two expressions above, do you notice the difference in the use of the `comma`. Why is there no comma in the last expression?
+
+## Summarizing variables
+ 8. Let’s assume we want to programmatically want to determine how many character there are in the sentence: "This is 1 character vector; Hello World!" What function would you use? Try it now in the console, how many characters are in the full sentence? How could you account for the white spaces? Look at the function `stringi::stri_stats_latex()` and `nchar()`
+
+## nchar and stringi
+```{r}
+ sum_char <- nchar(sentence)
+sentence_summary <- 
+  stringi::stri_stats_latex(sentence)
+sentence_summary 
+sentence
+```
+
+The `stringi::stri_stats_latex` is a convenient function if you want to analyze a text and get the statistics on word count etc.
+
+## Git repositories and Github.com
+
+go to http://www.github.com
+
+ 1. Create a new repository in your github account called "hello_world"
+ 2. Create a new RStudio project (Version Control) from this repository
+ 3. Start a new RMarkdown file called "Hello World.Rmd"
+ 4. Add the text: "Hello World!" 
+ 5. Add your name and today's date to the YAML header of the Rmd file
+ 6. Set the value for "output:" to "github_document"
+ 7. Press the knit button to create a special HTML file
+ 8. Stage the HTML file in the git tab
+ 9. Commit the file with a commit "My first commit"
+ 10. Push the file to your repository and provide the link to the file in your answer to this assignment
+ 11. Sent me the link to the file via the course Slack "personal message"
+
+## R Markdown
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
