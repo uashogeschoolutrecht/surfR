@@ -1,0 +1,695 @@
+---
+title: "Hands-on 2: Visualizations"
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      error = FALSE,
+                      message = FALSE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## Reference
+https://simplystatistics.org/2018/01/22/the-dslabs-package-provides-datasets-for-teaching-data-science/
+
+https://github.com/rbind/simplystats
+
+## Gapminder
+https://www.gapminder.org/tools/#$state$time$value=2018;;&chart-type=bubbles 
+
+## Citations
+```{r}
+citation(package = "ggplot2")
+citation(package = "tidyverse")
+citation(package = "dslabs")
+```
+
+## Installing data package 
+```{r, eval=FALSE}
+install.packages("dslabs")
+```
+
+## Loading the data package `{dslabs}` and other packages used
+```{r}
+library(tidyverse)
+library(dslabs)
+library(lubridate)
+```
+
+## Datasets included in the `{dslabs}` package
+```{r, eval=FALSE}
+data(package="dslabs")
+```
+
+## Getting original data wrangling scripts included also in the `{dslabs}` package
+```{r}
+list.files(system.file("script", package = "dslabs"))
+```
+
+## Opening one of the scripts
+```{r}
+wrangle_files <- list.files(system.file("script", package = "dslabs"), full.names = TRUE)
+wrangle_files[[1]]
+```
+
+## Loading a specific dataset by name
+```{r}
+data("gapminder", package = "dslabs")
+## ?gapminder for more info on the variables in the dataset
+```
+
+The gapminder dataset contains a number of measurements on health and income outcomes for 184 countries from 1960 to 2016. It also includes two character vectors, OECD and OPEC, with the names of OECD and OPEC countries from 2016. 
+
+## Inspecting the dataset with R
+```{r}
+gapminder <- gapminder %>% as_tibble()
+gapminder
+names(gapminder)
+```
+
+## A very simple example to start with
+We can plot two numeric variable against each other to spot relationships
+```{r}
+names(gapminder)
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point()
+```
+
+## This is a very dense plot
+We call this 'overplotting'.
+
+This can be fixed in several ways:
+
+ - Reducing the transparency of data points  
+ - Mapping colour to a variable (continuous or categorical)
+ - Reduce the data in the plot
+ - Mapping a shape to a variable
+ - Add noise (`"jitter"`) to points
+ - Facetting - create panels for 'categorical' or so-called 'factor' variables in R
+ - Summarize the data
+ - Displaying a model / relationship that represents the data (and not sho the actual data itself) 
+ - Or any combination of the above strategies
+
+__Basically you map an `aesthetic` (`aes()`) or a `characteristic` to a variable__
+ 
+Let's go over these overplotting methods one by one 
+
+## 1. Overplotting: Reducing transparency (`alpha`) of points or lines in the data
+```{r}
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(alpha = 0.1)
+```
+
+## 2. Mapping colour to a variable (continuous or categorical)
+```{r}
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(aes(colour = continent))
+
+## or combined with `alpha`
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.1) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
+
+```
+
+## 3. Reduce the data in the plot
+```{r}
+gapminder %>% 
+  filter(continent == "Africa" | continent == "Europe") %>%
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.2) +
+  ## override the alpha setting for the points in the legend:
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) 
+
+
+```
+
+## 4. Mapping a shape to a variable
+```{r}
+## or e.g. show only two years and map a shape to continent
+gapminder %>% 
+  dplyr::filter(continent == "Africa" | continent == "Europe",
+         year == "1970" | year == "2010") %>%
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(aes(colour = as.character(year), shape = continent), alpha = 0.7)
+```
+
+## 5.facet_wrap(~ year) Facetting - create panels for 'categorical' or so-called 'factor' variables in R
+```{r}
+gapminder %>% 
+  dplyr::filter(continent == "Africa" | continent == "Europe",
+         year == "1960" | year == "2010") %>%
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.5) +
+  facet_wrap(~ year)
+  
+  
+```
+
+## 6. Summarize the data
+```{r}
+library(ggrepel)
+
+years <- c("1960", "1970", "1980", "1990", "2000", "2010")
+
+gapminder %>% 
+  dplyr::filter(year %in% years) %>%
+  group_by(continent, year) %>%
+  summarise(mean_life_expectancy = mean(life_expectancy),
+            mean_fertility = mean(fertility)) %>%
+  ggplot(aes(x = mean_fertility,
+             y = mean_life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.7) 
+
+
+#+
+ # geom_label_repel(aes(label=year), size = 2)
+```
+
+## Adding labels to the points with `{ggrepel}`
+```{r}
+library(ggrepel)
+
+years <- c("1960", "1970", "1980", "1990", "2000", "2010")
+
+gapminder %>% 
+  dplyr::filter(year %in% years) %>%
+  group_by(continent, year) %>%
+  summarise(mean_life_expectancy = mean(life_expectancy),
+            mean_fertility = mean(fertility)) %>%
+  ggplot(aes(x = mean_fertility,
+             y = mean_life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.7) +
+  geom_label_repel(aes(label=year), size = 2.5, box.padding = .5)
+  
+```
+
+## 7. Displaying a model / relationship that represents the data (and not show the actual data itself) 
+```{r}
+
+lm <- gapminder %>% lm(formula = life_expectancy ~ fertility)
+
+correlation <- cor.test(x = gapminder$fertility, y = gapminder$life_expectancy, method = "pearson")
+
+# save predictions of the model in the new data frame 
+# together with variable you want to plot against
+predicted_df <- data.frame(gapminder_pred = predict(lm, gapminder), 
+                           fertility = gapminder$fertility)
+
+
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(alpha = 0.03) +
+  geom_line(data = predicted_df, aes(x = fertility, 
+                                     y = gapminder_pred),
+            colour = "darkred", size = 1)
+```
+
+## plotting statistics to the graph with the `{ggpubr}` package
+```{r}
+library(ggpubr)
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(alpha = 0.02) +
+  
+  geom_line(data = predicted_df, 
+            aes(x = fertility, 
+                y = gapminder_pred),
+            colour = "darkred", size = 1) +
+  stat_cor(method = "pearson", label.x = 2, label.y = 30) +
+  theme_bw()
+
+```
+
+## Using a smoother `geom_smooth`
+```{r}
+gapminder %>% 
+  ggplot(aes(x = fertility,
+             y = life_expectancy)) +
+  geom_point(alpha = 0.02) +
+  geom_smooth(method = "lm") +
+  stat_cor(method = "pearson", label.x = 2, label.y = 30) +
+  theme_bw()
+```
+
+## Relation between `gdp`, Gross Domestic Product and `infant_mortality` rate. 
+https://en.wikipedia.org/wiki/Gross_domestic_product
+Wikipedia: Gross Domestic Product (GDP) is a monetary measure of the market value of all the final goods and services produced in a period of time, often annually or quarterly. Nominal GDP estimates are commonly used to determine the economic performance of a whole country or region, and to make international comparisons. 
+```{r}
+gapminder %>%
+  dplyr::filter(continent == "Europe" | continent == "Africa") %>%
+  ggplot(aes(x = gdp, 
+             y = infant_mortality)) +
+  geom_point() +
+  geom_smooth(colour = "Darkred", size = 2, se = FALSE)
+
+```
+
+## Adding a bit of colour
+The figure above does not provide any clue on a possible difference between Europe and Africa, nor does it convey any information on trends over time.
+
+```{r}
+gapminder %>%
+  dplyr::filter(continent == "Europe" | continent == "Africa") %>%
+  ggplot(aes(x = gdp, 
+             y = infant_mortality)) +
+  geom_point(aes(colour = continent))
+
+```
+
+## Adding facets
+Let's investigate whether things have improved over time. We compare 1960 vs 2010 by using a panel of two figures. Adding simply `facet_wrap( ~ facetting_variable)` will do the trick.
+```{r}
+gapminder %>%
+  dplyr::filter(continent == "Europe" | continent == "Africa",
+                year == "1960" | year == "2010") %>%
+  ggplot(aes(x = gdp, 
+             y = infant_mortality)) +
+  geom_point(aes(colour = continent)) +
+  facet_wrap(~ year) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  
+
+```
+
+## Mapping to continuous variables
+So far we have been mapping colours and shapes to categorical variables. You can also map to continuous variables though.
+```{r}
+gapminder %>%
+  dplyr::filter(country == "Netherlands" | 
+                country == "China" |
+                country == "India") %>%
+  dplyr::filter(year %in% years) %>%
+  ggplot(aes(x = year,
+         y = life_expectancy)) +
+  geom_point(aes(size = population, colour = country)) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  theme_bw()
+```
+
+## Summarize per continent and sum population
+```{r}
+gapminder %>% 
+  dplyr::group_by(continent, year) %>%
+  dplyr::filter(year %in% years) %>%
+  summarise(mean_population = sum(population)) %>% 
+  ggplot(aes(x = year, 
+             y = mean_population)) +
+    geom_point(aes(size = mean_population, colour = continent))
+```
+
+## Ranking data
+```{r}
+gapminder %>%
+  dplyr::filter(continent == "Europe",
+                year == 2010) %>%
+  ggplot(aes(x = reorder(as_factor(country), population),
+             y = log10(population))) +
+  geom_point() +
+  ylab("log10(Population)") +
+  xlab("Country") + 
+  coord_flip() +
+  geom_point(data = filter(gapminder %>%
+  dplyr::filter(continent == "Europe",
+                year == 2010), population >= 1e7), colour = "red")
+
+```
+
+## Let's look at a time series
+We filter for "Americas" and "Oceanie" and look at `life_expectancy` over the years.
+```{r}
+## without summarizing for countries
+gapminder$continent %>% as_factor() %>% levels()
+gapminder %>% 
+  dplyr::filter(continent == "Americas" | continent == "Oceania") %>%
+  ggplot(aes(x = year,
+             y = life_expectancy)) +
+  geom_line(aes(group = continent,
+                colour = continent))
+```  
+
+**Obviously something went wrong here. Please, discuss with your neighbour what you think happened or needs to be done to fix this (without looking ahead ;-) )**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Grouping
+We can see what happened if we plot individual datapoints
+```{r}
+gapminder %>% 
+  dplyr::filter(continent == "Americas" | continent == "Oceania") %>%
+  ggplot(aes(x = year,
+             y = life_expectancy)) +
+  geom_point(aes(colour = country)) +
+  theme(legend.position="none") +
+  facet_wrap( ~ continent) +
+  theme(legend.position="none") 
+  
+```
+
+## Summarizing time series data
+```{r}
+gapminder$continent %>% as_factor() %>% levels()
+gapminder %>% 
+  dplyr::filter(continent == "Americas" | continent == "Oceania") %>%
+  group_by(continent, year) %>%
+  summarise(mean_life_expectancy = mean(life_expectancy)) %>%
+  ggplot(aes(x = year,
+             y = mean_life_expectancy)) +
+  geom_line(aes(group = continent,
+                colour = continent)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+## Statistical proof?
+```{r}
+
+df <- gapminder %>% 
+  dplyr::filter(continent == "Americas" | continent == "Oceania") %>%
+  group_by(continent, year)
+
+model <- aov(data = df, life_expectancy ~ continent * year)
+anova(model)
+
+```
+
+Some remarks on the above Two-way ANOVA:
+
+ - Repeated measures / multilevel models might be more appropriate here (paired / nested designs)
+ - We did not perform any check on assumptions
+ - We performed our analysis on only part of the data
+ 
+## One more option: categorical values and "jitter"
+Sometimes you have overlapping plots and adding transparency with `alpha()` or mapping colour to underlying categorical values is not working because there are simple to many points overlapping
+
+Let's look at an example
+```{r}
+gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  group_by(continent) %>%
+  dplyr::filter(year %in% years) %>%
+  ggplot(aes(x = year,
+             y = infant_mortality)) +
+  geom_point(aes(colour = country)) +
+  theme(legend.position="none")
+  
+```
+
+In such cases it can be helpfull to add some noise to the points (`position = "jitter"`) to reduce overlapping. This can be a powerfull approach, especially when combined with setting `alpha()`
+```{r}
+gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  dplyr::filter(year %in% years) %>%
+    group_by(continent) %>%
+  ggplot(aes(x = year,
+             y = infant_mortality)) +
+  geom_point(aes(colour = continent), position = "jitter") 
+  
+```
+ 
+## Bar chart 
+It would be nice to know what the mean child mortality is for both continents
+```{r}
+gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  dplyr::filter(year %in% years) %>%
+  group_by(continent, year) %>%
+  summarise(mean_infant_mortality = mean(infant_mortality, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year,
+             y = mean_infant_mortality)) +
+  geom_col(aes(fill = continent), position = "dodge") 
+  
+```
+
+## Adding summary data to an existing plot
+Now that we have the mean infant mortality for each year for the two continents, let's add that data to the previous dot plot where we used jitter
+```{r}
+mean_inf_mort <- gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  dplyr::filter(year %in% years) %>%
+  group_by(continent, year) %>%
+  summarise(mean_infant_mortality = mean(infant_mortality, na.rm = TRUE))
+
+gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  dplyr::filter(year %in% years) %>%
+    group_by(continent) %>%
+  ggplot(aes(x = year,
+             y = infant_mortality)) +
+  geom_point(aes(colour = continent), position = "jitter") +
+
+## summary data added to previous 
+  geom_line(data = mean_inf_mort, aes(x = year, 
+                                      y = mean_infant_mortality, 
+                                      colour = continent),  size = 2)
+
+
+```
+
+## Filter data from a graph
+In the figure above we can observe a number of countries in 'Americas' continent that have a child mortality that are above the average (over the years) of 'Africa'. Which countries are this?
+
+```{r}
+library(ggiraph)
+
+gapminder$country <- 
+  str_replace_all(string = gapminder$country, 
+                pattern = "'", 
+                replacement = "_")
+
+
+interactive_inf_mort <- gapminder %>% 
+  dplyr::filter(continent == "Americas" |
+                continent == "Africa") %>%
+  dplyr::filter(year %in% years) %>%
+    group_by(region, country) %>%
+  ggplot(aes(x = year,
+             y = infant_mortality)) +
+  
+  geom_point_interactive(aes(tooltip = country, colour = region), position = "jitter") +
+  
+#  geom_point(aes(colour = continent), position = "jitter") +
+
+## summary data added to previous 
+ geom_line(data = mean_inf_mort, aes(x = year, 
+                                      y = mean_infant_mortality, 
+                                      colour = continent, group = continent),  size = 2
+            )
+
+interactive_inf_mort
+
+gapminder$country %>% as_factor() %>% levels()
+ggiraph(ggobj = interactive_inf_mort)
+
+```
+
+
+
+
+
+
+ 
+## A more complicated example (for showing the capabilities of ggplot2)
+```{r}
+west <- c("Western Europe","Northern Europe","Southern Europe",
+          "Northern America","Australia and New Zealand")
+
+gapminder <- gapminder %>%
+  mutate(group = case_when(
+    region %in% west ~ "The West",
+    region %in% c("Eastern Asia", "South-Eastern Asia") ~ "East Asia",
+    region %in% c("Caribbean", "Central America", "South America") ~ "Latin America",
+    continent == "Africa" & region != "Northern Africa" ~ "Sub-Saharan Africa",
+    TRUE ~ "Others"))
+gapminder <- gapminder %>%
+  mutate(group = factor(group, levels = rev(c("Others", "Latin America", "East Asia","Sub-Saharan Africa", "The West"))))
+
+filter(gapminder, year%in%c(1962, 2013) & !is.na(group) &
+         !is.na(fertility) & !is.na(life_expectancy)) %>%
+  mutate(population_in_millions = population/10^6) %>%
+  ggplot( aes(fertility, y=life_expectancy, col = group, size = population_in_millions)) +
+  geom_point(alpha = 0.8) +
+  guides(size=FALSE) +
+  theme(plot.title = element_blank(), legend.title = element_blank()) +
+  coord_cartesian(ylim = c(30, 85)) +
+  xlab("Fertility rate (births per woman)") +
+  ylab("Life Expectancy") +
+  geom_text(aes(x=7, y=82, label=year), cex=12, color="grey") +
+  facet_grid(. ~ year) +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        strip.text.y = element_blank(),
+   legend.position = "top")
+```
+
+
+# Optional (Data Distributions & Outliers)
+
+## Detecting outliers
+For this part we use a different and more simple dataset
+This dataset contains 1192 observations on self-reported:
+
+ - `height` (inch)
+ - `earn` ($)
+ - `sex` (gender)
+ - `ed` (currently unannotated)
+ - `age` (years)
+ - `race` 
+ 
+```{r}
+heights_data <- read_csv(file = file.path(root,
+                                          "data",
+                                          "heights_outliers.csv"))
+
+heights_data
+```
+
+## Data characteristics
+We will focus on the variable `height` here
+```{r}
+summary_heights_data <- heights_data %>%
+  group_by(sex, age) %>%
+  summarise(mean_height = mean(height, na.rm = TRUE),
+            min_height = min(height),
+            max_height = max(height)) %>%
+  arrange(desc(mean_height))
+
+summary_heights_data[c(1:4),]
+```
+
+From the above summary we can conclude that there are two outliers (presumably entry errors).
+
+**Calculate the height in meters for each outlier in the `Console`** 1 inch = 0,0254 meters
+
+**Please discuss the solution with your neighbour** 
+
+## Checking the frequency distribution
+```{r}
+
+heights_data %>%
+  ggplot(aes(x = height)) +
+  geom_histogram(aes(stat = "identity"), bins = 200)
+```
+
+This distribution looks odd. 
+When you see a large x-axis with no data plotted on it, it usually means there is an outlier. If you look carefully, you will spot two outliers around 600
+
+## Boxplots to detect outliers
+```{r}
+heights_data %>%
+  ggplot(aes(y = height)) +
+  geom_boxplot()
+```
+
+So apparantly there is one data point that is way off from the rest of the distribution. Let's remove this point, using `filter()` from the `{dplyr}` package like we did before on the `gapminder` dataset.
+```{r}
+heights_data %>%
+  dplyr::filter(height < 100) %>%
+  ggplot(aes(y = height)) +
+  geom_boxplot()
+
+## by sex
+
+heights_data %>%
+  dplyr::filter(height < 100) %>%
+  ggplot(aes(y = height, x = sex)) +
+  geom_boxplot()
+
+```
+
+## New frequency distribution
+Now let's plot a new distribution plot, this time we plot density, leaving the outlier out
+```{r}
+heights_data %>%
+  dplyr::filter(height < 100) %>%
+  ggplot(aes(height)) +
+  geom_freqpoly(aes(y = ..density..))
+
+## by sex
+heights_data %>%
+  dplyr::filter(height < 100) %>%
+  ggplot(aes(height)) +
+  geom_freqpoly(aes(y = ..density.., colour = sex))
+
+```
+
+
+## Checking normality with a qqplot
+```{r}
+## a qqplot provides a visual aid to assess whether a distribution is approaching normality
+source(file = file.path(root, "code", "ggqq.R"))
+height_data_outlier_removed <- heights_data %>%
+  dplyr::filter(height < 100)
+  gg_qq(height_data_outlier_removed$height) 
+  
+## formal statistical proof
+shapiro.test(height_data_outlier_removed$height)
+```
+
+all data -> reject hypothesis that the sample has a normal distribution
+
+## Test individual distributions
+```{r}
+males <- height_data_outlier_removed %>%
+  dplyr::filter(sex == "male")
+
+females <- height_data_outlier_removed %>%
+  dplyr::filter(sex == "female")
+
+shapiro.test(males$height)
+shapiro.test(females$height)
+## add shapiro for each sex
+
+## we can do the same for age
+shapiro.test(males$age)
+shapiro.test(females$age)
+```

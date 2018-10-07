@@ -1,0 +1,141 @@
+---
+title: 'Hands-on 3: Wrangling data with the {dplyr} package'
+author: "Marc A.T. Teunis"
+date: "11/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      error = FALSE,
+                      message = FALSE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## Citations
+```{r}
+citation(package = "ggplot2")
+citation(package = "tidyverse")
+citation(package = "dslabs")
+```
+
+## Packages
+```{r}
+library(tidyverse)
+library(dslabs)
+```
+
+## Data
+
+Pertussis outbreaks from World Health Organization
+
+http://data.euro.who.int/cisid/?TabID=463987
+
+See for info also: 
+
+http://ecdc.europa.eu/sites/portal/files/documents/Pertussis%20AER.pdf
+
+## Source data
+The data used in this presentation has been constructed from the interactive datbase tool hosted at: http://data.euro.who.int/cisid/ 
+A selection was made for all available countries and all avaialable years, for the number os cases reported to the WHO for Whooping Cough - pertussis infections.
+The file is avaialble in `./data/CISID_pertussis_10082018.csv`
+
+## Characteristics
+
+- The first few lines of the file have comments indicated with `#`
+- There are 53 countries in the dataset
+- There is no data for the years 1980-1989 and 2014-2018
+- The data is not in `tidy` format
+- Missing values are indicated with _`NA`_
+- It is not a good idea to have a column name starting with a digit; why?
+
+## Inspect the file with a linux command
+```{r, linux_command}
+system("head -20 ./data/CISID_pertussis_10082018.csv")
+```
+The delimeter is `,` and we indeed see the comments at the start of the file. 
+
+## Read data
+```{r, read_data}
+pertussis_data <- read_csv(file = file.path(root, 
+                                            "data", 
+                                            "CISID_pertussis_10082018.csv"),
+                           comment = "#", n_max = 53, na = c("", " "))
+```
+
+## Inspect data
+```{r, inspect_data}
+pertussis_data
+names(pertussis_data)
+```
+
+## The pipe
+
+**%>%**
+
+## Tidy data
+```{r, eval=FALSE, error_variable_reference}
+
+## try the code below, why does it fail?
+pertussis_data_tidy <- pertussis_data %>% 
+  gather(1980:2018, key = "year", value = "annual_pertussis_cases") %>%
+  print()
+
+```
+
+Using ``` ` ``` to reference names that contain 'digits' or other 'special characters'
+```{r, good_variable_reference}
+
+pertussis_data_tidy <- pertussis_data %>% 
+  gather(`1980`:`2018`, key = "year", value = "annual_pertussis_cases") %>%
+  ## rename X1 / x2 columns
+  rename(key = X1,
+         country = X2) %>%
+  mutate(annual_pertussis_cases = as.integer(annual_pertussis_cases)) %>%
+# we prentend that the measurement for the year was reported on January 1st the next  year.
+  mutate(year = lubridate::ymd(year, truncated = 2L)) %>%
+  mutate(year = lubridate::ceiling_date(year, unit = "year"))
+
+pertussis_data_tidy
+```
+
+## Removing years for which there is no data
+```{r, tidy_data}
+no_data_years <- c("1981":"1990", "2015":"2018") %>% 
+  lubridate::ymd(truncated = 2L) 
+
+## using an index vector to filter() the years
+pertussis_data_tidy <- pertussis_data_tidy %>%
+  dplyr::filter(!year %in% no_data_years)
+
+pertussis_data_tidy$year %>%
+  as.character() %>%
+  as_factor() %>% levels()
+```
+
+## Join pertussis data with population data
+Here we join the pertussis data with the `gapminder` data
+```{r}
+data("gapminder", package = "dslabs")
+gapminder <- gapminder %>% as_tibble()
+gapminder <- gapminder %>% 
+  mutate(year =  lubridate::ymd(year, truncated = 2L)) %>%
+  mutate(year = lubridate::ceiling_date(year, unit = "year"))
+
+
+join <- left_join(pertussis_data_tidy, gapminder) 
+```
+
+# `{dplyr}`
+
+## The `{dplyr}` verbes
+
+
+

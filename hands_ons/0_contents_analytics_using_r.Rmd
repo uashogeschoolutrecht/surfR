@@ -1,0 +1,101 @@
+---
+title: "Analytics Using R - Contents"
+author: "Marc A.T. Teunis"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation: 
+    highlight: pygments
+    widescreen: yes
+---
+<style>
+
+.footer {
+    font-size: 16pt;
+    color: Black;
+    font-family: 'Helvetica'
+    content: attr(label);
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align:center;
+    bottom: 10px;
+    line-height: 1.9;
+    display: block;
+}
+
+</style>
+
+<div class="footer" style="margin-top;font-size:120%;"> 
+Analytics Using R - `r Sys.Date()` </div>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 3)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## Programme
+
+ - 10:30 Start
+ - 10:40 Use case 1 
+ - 11:00 Hands-on Part 1; RStudio and R-basics
+ - 11:45 -- 12:30 LUNCH
+ - 12:30 Hands-on Part 2  
+ - 15:00 Use case 2
+ - 15:30 Hands-on Part 3
+ - 17:00 Drinks & Networking
+
+# Workshop contents
+
+## **PART 1**
+
+ * Start; "Reproducible research with R" - 'Jan-Willem Lankhaar'
+ * Use case 1; "Big Data in Psychiatry" - 'Karin Hagoort'
+ * Hands-on 1; Github, RStudio, R-basics
+ 
+ ------ exercise ------
+
+## **PART 2** 
+ 
+ * Recap R-basics 
+ * Hands-on 2; Visualizations with `{ggplot2}`
+ 
+ ------ exercise ------
+ 
+ * Use case "Open Analytics" - 30 min.
+ * Hands-on 3; Data wrangling with `{dplyr}`
+ 
+## Datasets
+
+ * `gapminder`  
+ * `heights_outliers`
+ * `Animals.xlsx`  
+ * `pertussis_outbreaks.csv`
+
+# Credits
+
+Much of this material has been derived in one way or the other from the work of 
+Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the REFERENCES.txt file in the project root.
+
+Thanks to Hadley & Garret for writing the book "R for Data Science" http://r4ds.had.co.nz/ and for their work in general to innovate the R world.
+
+Work on integration of Git/Github with R/RStudio is thouroughly and witfully documented by Jenny Brian. I also very much appreciate her work on the use of R-Markdown. See also:
+
+https://github.com/jennybc/happy-git-with-r & http://stat545.com/block007_first-use-rmarkdown.html 
+
+## Disclaimer & Licence
+
+_The work in this presentation has been adapted from many sources as mentioned in slide 'Credits'. For a full reference list see the 'REFERENCES.txt' document in the github repo 
+https://www.github.com/usashogeschoolutrecht/surf_research_bootcamp_2018
+
+The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-SA
+
+
+

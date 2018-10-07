@@ -3,9 +3,7 @@ title: "Exercise - Visualizations"
 author: "Marc A.T. Teunis"
 date: "`r Sys.Date()`"
 output:
-  html_document:
-    css: ~/hp_r_course/exercises/exercises_style.css
-  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -35,17 +33,19 @@ library(readxl)
 ## add more if you need them
 ```
 
-__Write an Rmd file, containing code chunks (if applicable) and answer all the questions below. Store the file in a folder called: "./answers_exercises" in your course project folder. Give this file the same name as the title of the current Rmd file__
+__Try adding code to this file that answers the questions posed below__
 
-## {ggplot2}
-As shown in the lecture, the {ggplot2} package is a very strong tool to make plots. It is somewhat more difficult to master than other plotting systems in R, but it is much stronger and much, much more versatile.
+__Where you see **ANSWER**, this is the place where your answer code is supposed to go__ 
+
+## `{ggplot2}`
+As shown in the demo, the {ggplot2} package is a very strong tool to make plots. It is somewhat more difficult to master than other plotting systems in R, but it is much stronger and much, much more versatile.
 
 In order to force you to study ggplot syntax, you will have to create plots in this exercise using {ggplot2} syntax only!!
 
 ## Introduction
-In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to oneanother or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the `geom_histogram()` or `geom_freypoly()` in {ggplot2}.
+In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to one another or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the `geom_histogram()` or `geom_freypoly()` in {ggplot2}. Alternatively you can use `geom_boxplot()` to create boxplots. 
 
-## Exercise 1: Treatment Effect Relations
+## **Exercise 1: Treatment Effect Relations**
 In this exercise we will use a build-in dataset from the {datasets} package. The data can be loaded by typing 
 ```
 chicks <- datasets::ChickWeight
@@ -62,11 +62,11 @@ chicks <- datasets::ChickWeight
 
  - Are there any missing values, if yes how many? (`sum(is.na()`)
  - What types of variables do we have? (use the `str()` command)
- - Convert to a tibble
+ - Convert to a tibble with `as_tibble()`
  - Are all the variables of the right type?
  - Which variables are categorical?
  - Which are numeric?
- - Change grouping variables to facors if neccesary(`chicks$var <- as.factor(chicks$var)`)
+ - Change grouping/categorical variables to facors if neccesary(`chicks$var <- as_factor(chicks$var)`)
  
 ```{r}
 head(chicks)
@@ -219,185 +219,213 @@ tukey
 ```
 
 
+# EXERCISE 2; Excel files - load and visualize
+## Loading Microsoft Office Excel files. 
 
-## Exercise 2: Clinical dataset "Mondial"
-
-A dataset from a clinical study of patients that underwent gastric surgery
-
-Box plots can convey information on the variance in a dataset. It is useful for repeated measures data.
-
-For this exercise we load the "Mondial" data. This dataset includes a number of clinical measurements from people who underwent gastric surgery.
-
-## Load the "Mondial" data with the code below
-```{r, echo=TRUE}
-## tidyverse solution
-# install.packages()
-library(readr)
-?read_rds
-path_to_file <- file.path(root, "data", "mondial.Rda")
-mondial <- read_rds(path = path_to_file)
-```
-
-## Cleaning up the data
-
- - Inspect the data
- - Change the variable names to all lowercase, no spaces, snake_case, no "()". 
+ 3A) Loading an Excel file
  
-Use the code below to perform these cleaning steps, discuss the steps in the code with you neighbour: Copy the code to you Rmd file for this exercise and add `##` comments to the code after the discussions.
-```{r, echo=TRUE, results='markup'}
-library(stringr)
-head(mondial)
-sum(is.na(mondial))
-# all lower case
-names(mondial) <- tolower(names(mondial))
-# remove spaces
-names(mondial) <- str_replace_all(names(mondial), 
-            pattern = " ", replacement = "_")
-# remove special characters (like "()")
-names(mondial) <- str_replace_all(names(mondial), 
-            pattern = "[[:punct:]]", replacement = "_")
-# remove last trailing "_"
-names(mondial) <- str_replace_all(names(mondial), 
-            pattern = "_$", replacement = "")
-# replace double "__" for single "_"
-names(mondial) <- str_replace_all(names(mondial), 
-            pattern = "__", replacement = "_")
+In the `"./data"` folder of your project you wille find several example datafiles that we are going to work on during the exercises.
 
-names(mondial)
-```
+The first set we are going to work on is a rather simple example
 
-2A) Creating a box-plot to see variation in the data
+"./data/Animals.xls". 
 
-Boxplots are great to get an idea on variance in the data and to identify varibles that contain outliers.
+It is an Miscrosoft Excel file containing brain and body weight of a number of animals: http://mste.illinois.edu/malcz/DATA/BIOLOGY/Animals.html 
 
-Generate a box plot for all `numeric` variables in the dataset.
+DESCRIPTION:
+Average brain and body weights for 27 species of land animals.
 
-The variables that you need to plot in this boxplot are:
+VARIABLES:
 
-```{r, echo=TRUE, results='markup'}
-x <- names(mondial)[c(3, 14, 15, 16, 17, 18)]
-x
-```
-Use the dataset `mondial_select` that is generated by the following code chunk for this plot
+ - body: body weight in kg
+ - brain: brain weight in g 
 
-Put the variable `biomarker` on the x-axis and the variable `result` of `mondial_select` on the y-axis.
+SIZE: 
 
-**TIPs**
- - use `dplyr::select()` to select the proper variables
- - use geom_boxplot to create a boxplot with {ggplot2}
+ - Observations = 27; 
+ - Variables = 2
 
-2B)
-__The code below generates a clean dataset with the proper variables selected to complete the exercise. Review the code and see if you can follow the step, discuss with you neighbour.__
+SOURCE:
+Rousseeuw, P.J. & Leroy, A.M. (1987) Robust Regression and Outlier Detection. Wiley, p. 57.
 
-```{r, echo=TRUE, results='markup'}
-# selecting only numeric variables
-names(mondial)
+Write a code chunk that loads the file `"./data/Animals.xls"` into R. 
+You may use any function you like, but you are not allowed to transform the data in any way. Name the file `animals` as a datatable/dataframe/tibble in R 
 
-mondial_select <- mondial %>%
-  select(study,
-         t2d,
-         age_at_surgery,
-         length_cm,
-         weight_kg,
-         bmi,
-         waist_circumference,
-         fasting_glucose_mmol_l)
 
-# In order to be able to create this graph we need to reshape the data to a "stacked" or so-called "long" format
-names(mondial_select)
-mondial_select <- mondial_select %>%
-  gather(age_at_surgery:fasting_glucose_mmol_l, 
-         key = biomarker, value = result)
+**TIPs** 
+ 
+ - You can use the `readxl::read_excel()` function to solve this question.
+ - Rember to use `library` to load the required package(s)
+ - The first row that contains data is the "Mountain Beaver" observation
+ - Remember that in some functions you can also set `header = FALSE`
+ - The variables in this dataset need to be `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER!. These are the so-called `names` of the dataframe and can be set or checked using the function `names()`
+ - Remember `dplyr::select`, `dplyr::filter()`, `dplyr::group_by`, `dplyr::summarize()`
+ 
+**ANSWER:**
 
-head(mondial_select)
-```
-
-Create the box plot code in a code chunk below. Use the reshaped dataframe called "mondial_select" for this plot.
-
-**ANSWER**
 ```{r}
-# create boxplot
-ggplot(data = mondial_select, 
-       aes(x = biomarker, y = result)) +
-  geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# tidyverse solution
+# readxl::readxl solution
+library(readxl)
+path_to_file <- file.path(root, "data", "Animals.xls")
+animals_readxl <- readxl::read_excel(path = path_to_file, sheet = 1,
+                              skip = 1, trim_ws = TRUE)
+
+animals_readxl <- na.omit(animals_readxl)
+
+# ?readxl
+## the names are not correct, change if neccessary, see 2C
+```
+
+```{r, eval=FALSE}
+# Other option: {xlsx}
+# install.packages("xlsx")
+library(xlsx)
+# ?read.xlsx2
+animals_xlsx <- read.xlsx2(file = path_to_file, startRow = 4,
+                           sheetIndex = 1)
+# okay, so the version of Excel originally used to build this datafile is too old...
+``` 
+
+```{r, eval=FALSE}
+# other option: {gdata}
+library(gdata)
+# ?read.xls()
+# ?read.csv
+animals_gdata = read.xls(path_to_file, sheet = 1, header = TRUE,
+skip = 1)
+
+## This needs a Perl installation (see: strawberryperl.com)
+## OKAY, so obviously, there are good reasons, NOT to use Excel files to store data!!
 
 ```
 
-## Type-2 diabetes
+ 3B) Variable names.
+The `names` of a dataframe can be found or set with `names(dataframe)`. Try setting the names for the `animal` dataframe to `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER. 
 
-In the `mondial` dataset we see the variable `t2d`. This variable is a logical indicating whether the patients in the dataset have Type-2 diabetes or not.
+**ANSWER:**
 
-2C) Data inspection
+```{r}
+names(animals_readxl) <- c("animal", "body_weight", "brain_weight")
 
- - Inspect the variable, what is the type of the variable?
- - There are supposed to be two levels in the variable. How many are there really. 
- - How could you correct the levels?
- 
-**TIPs**
- - We use `str_replace_all` the same way as above to correct the following entries
- 
-RUN the code chunk below that corrects the levels in the factor variable `t2d`
+## other solution:
+colnames(animals_readxl) <- c("animal", "body_weight", "brain_weight")
 
-__Discuss the code below with your neighbour, can you follow all the steps?__
-```{r, echo=TRUE, results='markup'}
-class(mondial$t2d)
-mondial$t2d <- as.factor(mondial$t2d)
-levels(mondial$t2d)
-
-(mondial <- as_tibble(mondial))
-mondial$t2d <- tolower(mondial$t2d)
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "\\s",
-                      replacement = "")
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "[[:punct:]]",
-                      replacement = "")
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "glucoseintol",
-                      replacement = "inconclusive")
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "gestoordnuchterglucose",
-                      replacement = "inconclusive")
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "sindsmaagbandnietmeer",
-                      replacement = "")
-mondial$t2d <- str_replace_all(mondial$t2d,
-                      pattern = "nee",
-                      replacement = "no")
-mondial$t2d <- as.factor(mondial$t2d)
-levels(mondial$t2d)
+pander::pander(head(animals_readxl))
 ```
- 
-2D) Facets for `t2d`
- 
- Create a scatter plot using the `mondial` data (not `mondial_select`), put `fasting_glucose_mmol_l` on the x-axis and `weight` on the y-axis. create facets for the `t2d` variable. Create correct titel and axis-labels
 
-**What can you conclude about the relation between fasting glucose, weight and type-2 diabetes?**
+ 3C) Subsetting.
+The `animals` data can be subsetted and explored by using the subsetting functions from `dplyr`.
+
+  - Which animal has a body weight of 6654.000 kg and a brain weight of 5712.0 g?
+  - Write a few lines of code that extract this information from the dataframe.
+
+**ANSWER:** 
+
+```{r}
+library(dplyr)
+## dplyr solution:
+animals_readxl %>% filter(body_weight == 6654 & brain_weight == 5712)
+
+## base-R solution 
+#ind <- animals_readxl[,2] == 6654 & animals_readxl[, 3] == 5712 
+#animals_readxl[ind, ]
+```
+
+ 3D) Filtering.
+Which animal has the smallest brain weight? 
+Write code that confirms this finding  
  
  **TIPs**
  
- - To facet a plot you can use either `facet_grid()` of `facet_wrap()` try them both, look up in the book "r4ds".
- - To generate a plot title, use `ggtitle()`
- - To label axis use `xlab` and `ylab` 
- 
- **ANSWER**
+ - Use `dplyr::filter()` and `%>%` to find the answer.
+ - You can also use `min(vector, na.rm = TRUE)` to find the answer. 
+ - Try to write a few lines of code that answer this question with the correct output in the `Console` 
 ```{r}
-  names(mondial)
+## dplyr solution
+head(animals_readxl %>% arrange(brain_weight), 1)
 
-facets_t2d <- ggplot(data = mondial, 
-                 aes(x = fasting_glucose_mmol_l,
-                     y = weight_kg)) +
-  geom_point() +
-  facet_wrap( ~ t2d) +
-  ggtitle("t2d vs fasting glucose levels in serum") +
-  xlab("Serum glucose (mmol/L") +
-  ylab("Body weight")
- 
- facets_t2d
+## or
+animals_readxl %>% 
+  filter(brain_weight == min(animals_readxl$brain_weight, 
+                             na.rm = TRUE))
+
 ```
 
-# **BONUS EXERCISE**
+ 3E) Plots; 
+Create a plot that shows the realtionship between `body_weigth` and `brain_weight`. Create a dot plot, that shows this relationship.
+
+**TIPs**
+ 
+ - Remember `ggplot2` from the "Visualizations" class
+ - Remember `geom_point()`
+ - Remember `geom_smooth()`
+ - Remember using `%>%` in conjunction with `ggplot()` and the `dplyr` verbs
+ 
+#### ANSWER:
+```{r}
+library(ggplot2)
+plot <- animals_readxl %>% 
+  ggplot(aes(x = body_weight, y = brain_weight)) +
+    geom_point() +
+    geom_smooth()
+plot
+```
+
+
+ 3F) Removing oulier. 
+On the basis of the plot above, construct a new plot that eliminates the data point for the animal "Brachiosaurus". What can you conclude from the relationship between body weigth and brain weigth, from this new plot? 
+
+**ANSWER:** 
+```{r}
+no_brachio <- animals_readxl %>% filter(!animal == "Brachiosaurus") %>%
+  ggplot(aes(x = body_weight, y = brain_weight)) +
+    geom_point() +
+    geom_smooth()
+no_brachio
+```
+
+ From the plot, what can you conclude about the relationship. Are there any outliers?
+
+ 3G) Data Transformation.
+Plot the relationship of the full dataset (including "Brachiosaurus"), between body weight and brain weight.
+Transform the body_weight variable to a log10 scale
+```{r}
+library(ggplot2)
+plot <- animals_readxl %>% 
+## create a new variable (log10 transformed body_weight)
+    mutate(log10_bw = log10(body_weight)) %>%
+## create a new plot  
+  ggplot(aes(x = log10_bw, y = brain_weight)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+## call the plot
+plot
+```
+
+ 3H) What can you conclude from the 3G plot? 
+What happens to the relation between body_weigt and brain_weight if you excluse all dinosaurs ("Brachiosaurus", "Diplodocus" and "Triceratops") from the dataset?
+**Write a short conclusion on this plot.**
+
+**ANSWER:**
+```{r}
+library(ggplot2)
+no_dinos <- animals_readxl %>%
+  filter(!animal == "Brachiosaurus" & 
+         !animal == "Diplodocus" &
+         !animal == "Triceratops") %>%
+## create a new variable (log10 transformed body_weight)
+    mutate(log10_bw = log10(body_weight)) %>%
+## create a new plot  
+  ggplot(aes(x = log10_bw, y = brain_weight)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+## call the plot
+no_dinos
+```
+
+
+# **BONUS EXERCISE 3**
 
 ## Exercise 3; Relational Genomics Data
 Exercise 3 is a more difficult and challenging exercise. It uses data in a form that is often used in the Lif Sciences: A Matrix with nummeric values. The file contains many variables, that are all deletions of certain genes. The rownames are the gene names for the gene in which the deletion was performed.
@@ -413,14 +441,8 @@ In two seperate files meta-data is stored that provides extra information:
 ## Data load
 The code below loads the data, copy it to your Rmd for this exercise.
 Load the data from exp_profiles_gstf_cf.M.txt (This file contains the M values, or log2 fold-change gene expression changes caused by removing (deleting) a particular gene).
-```{r, load_data, echo =  TRUE}
-## defines the root of the project for later use
-require("rprojroot") || utils::install.packages("rprojroot")
-library(rprojroot)
 
-## actual call for data load
-root <- find_root_file(criterion = is_rstudio_project)
-library(tidyverse)
+```{r, load_data, echo =  TRUE}
 file_path <- file.path(root, "data", "exp_profiles_gstf_cf.M.txt")
 
 ?read_table2
@@ -435,13 +457,13 @@ Create a histogram for the variable `$msn2_del`. Play with the number of bins. S
 
 **TIPs**
 
- - Remember to set the `mappings = (aes(msn2_del)` argument.
+ - Remember to set the `aes(msn2_del)` argument.
  - Play with the argument `bins = `
  - Use `ggtitle()`, `xlab()` and `ylab()` to create labels of the axes and the plot title
  
 **ANSWER 3A**
 ```{r, histograms_3A}
-ggplot(data = expression_gstf, mapping = aes(msn2_del)) +
+ggplot(data = expression_gstf, aes(msn2_del)) +
   geom_histogram(bins = 100) + ylab("Count") +
   xlab("log2") + ggtitle("Histogram of msn2_del")
 ```
@@ -497,7 +519,7 @@ cowplot::plot_grid(freqpoly, histograms)
 If we want to plot multiple variables in one plot it is more convenient to change the dataset to a different format.
 
 The code (we will learn how to do this later) for transforming the data to a stacked format is:
-```{r, echo = TRUE, results='markup'}
+```{r, echo = TRUE}
 # ?gather
 # add extra column with gene names
 expression_gstf$sgid <- rownames(expression_gstf)

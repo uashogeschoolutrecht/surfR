@@ -1,0 +1,62 @@
+---
+title: "Running Python within RStudio"
+author: "Marc A.T. Teunis"
+date: "10/5/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, root_1, include=FALSE}
+## defines the root of the project for later use
+require("rprojroot") || utils::install.packages("rprojroot")
+library(rprojroot)
+root <- find_root_file(criterion = is_rstudio_project)
+```
+
+## Packages
+```{r}
+library(tidyverse)
+```
+
+## Loading `{reticulate}` package to get Python working in RStudio
+Checking if Python installation is avaible
+```{r}
+library(reticulate)
+py_av <- py_available(initialize = TRUE)
+py_av
+os <- import("os")
+os$getcwd()
+numpy <- import("numpy")
+pandas <- import("pandas")
+```
+
+## Python chunk to read datafile
+```{python}
+# repl_python()
+from pathlib import Path
+root = Path(r.root)
+data_folder = root / "data"
+file_to_open = data_folder / "heights_outliers.csv"
+# f = open(file_to_open)
+
+import pandas as pd
+heights = pd.read_csv(file_to_open)
+heights.shape
+heights.head(2)
+```
+
+## R chunk to plot with `{ggplot2}`
+```{r}
+df <- py$heights %>% as_tibble()
+df
+df %>% 
+  dplyr::filter(height < 100) %>%
+  ggplot(aes(x = height, 
+             y = earn)) + 
+  geom_point(aes(colour = race), alpha = 0.4) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  facet_grid(race ~ sex)
+```

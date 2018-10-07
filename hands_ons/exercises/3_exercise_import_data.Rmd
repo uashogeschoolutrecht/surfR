@@ -216,7 +216,7 @@ You may use any function you like, but you are not allowed to transform the data
 
 **TIPs** 
  
- - You can use the `readr::readxl` function to solve this question.
+ - You can use the `readxl::read_excel()` function to solve this question.
  - Rember to use `library` to load the required package(s)
  - The first row that contains data is the "Mountain Beaver" observation
  - Remember that in some functions you can also set `header = FALSE`
