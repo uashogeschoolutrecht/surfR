@@ -38,7 +38,7 @@ pandas <- import("pandas")
 # repl_python()
 from pathlib import Path
 root = Path(r.root)
-data_folder = root / "data"
+data_folder = root
 file_to_open = data_folder / "heights_outliers.csv"
 # f = open(file_to_open)
 

@@ -69,8 +69,12 @@ root <- find_root_file(criterion = is_rstudio_project)
  
  ------ exercise ------
  
+## **PART 3**  
+ 
  * Use case "Open Analytics" - 30 min.
  * Hands-on 3; Data wrangling with `{dplyr}`
+ 
+ -- in between exercises --
  
 ## Datasets
 
@@ -97,5 +101,23 @@ https://www.github.com/usashogeschoolutrecht/surf_research_bootcamp_2018
 
 The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-SA
 
+## Getting the workshop materials
 
+ 1. Create an account on github.com
+ 2. Go to the github repo: www.github.com/uashogeschoolutrecht/surfR
+ 3. Copy the url from the browser
+ 4. Log into the RStudio Server@ https://www.data.innovativetesting.nl with your username and password (username = `see little note your recieved upon entrance (surf_bootcamp_...)`, password = `SURFB##TC@MP`)
+ 5. Create a `New Project` --> `Git` --> `Paste url from clipboard`
+ 6. Let the clone finish
+ 7. Let's get started! 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 4. Start a New Project in
 

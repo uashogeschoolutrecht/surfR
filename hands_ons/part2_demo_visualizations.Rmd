@@ -291,7 +291,7 @@ gapminder %>%
              y = infant_mortality)) +
   geom_point(aes(colour = continent)) +
   facet_wrap(~ year) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = -90, hjust = 1))
   
 
 ```
@@ -316,10 +316,10 @@ gapminder %>%
 gapminder %>% 
   dplyr::group_by(continent, year) %>%
   dplyr::filter(year %in% years) %>%
-  summarise(mean_population = sum(population)) %>% 
+  summarise(sum_population = sum(population)) %>% 
   ggplot(aes(x = year, 
-             y = mean_population)) +
-    geom_point(aes(size = mean_population, colour = continent))
+             y = sum_population)) +
+    geom_point(aes(size = sum_population, colour = continent))
 ```
 
 ## Ranking data
