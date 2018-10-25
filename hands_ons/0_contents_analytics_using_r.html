@@ -10,7 +10,7 @@
 
 
 
-  <meta name="date" content="2018-10-22" />
+  <meta name="date" content="2018-10-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3107,7 +3107,7 @@ if (document.readyState !== "loading" &&
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">2018-10-22</p>
+            <p style="margin-top: 6px; margin-left: -2px;">2018-10-23</p>
           </hgroup>
   </slide>
 
@@ -3132,7 +3132,7 @@ if (document.readyState !== "loading" &&
 </style>
 
 <div style="margin-top;font-size:120%;" class="footer">
-Analytics Using R - 2018-10-22</div>
+Analytics Using R - 2018-10-23</div>
 
 <slide class=""><hgroup><h2>Programme</h2></hgroup><article  id="programme">
 
@@ -3188,7 +3188,7 @@ Analytics Using R - 2018-10-22</div>
 
 </article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Credits</h2></hgroup><article  id="credits">
 
-<p>Much of this material has been derived in one way or the other from the work of Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the REFERENCES.txt file in the project root.</p>
+<p>Much of this material has been derived in one way or the other from the work of Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the resources.Rmd file in the project root.</p>
 
 <p>Thanks to Hadley &amp; Garret for writing the book &ldquo;R for Data Science&rdquo; <a href='http://r4ds.had.co.nz/' title=''>http://r4ds.had.co.nz/</a> and for their work in general to innovate the R world.</p>
 
@@ -3198,7 +3198,7 @@ Analytics Using R - 2018-10-22</div>
 
 </article></slide><slide class=""><hgroup><h2>Disclaimer &amp; Licence</h2></hgroup><article  id="disclaimer-licence">
 
-<p>_The work in this presentation has been adapted from many sources as mentioned in slide &lsquo;Credits&rsquo;. For a full reference list see the &lsquo;REFERENCES.txt&rsquo; document in the github repo <a href='https://www.github.com/usashogeschoolutrecht/surf_research_bootcamp_2018' title=''>https://www.github.com/usashogeschoolutrecht/surf_research_bootcamp_2018</a></p>
+<p>The work in this presentation has been adapted from many sources as mentioned in slide &lsquo;Credits&rsquo;. For a full reference list see the &lsquo;resources.html&rsquo; document in the github repo <a href='https://www.github.com/uashogeschoolutrecht/surfR' title=''>https://www.github.com/uashogeschoolutrecht/surfR</a></p>
 
 <p>The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-SA</p>
 
@@ -3208,10 +3208,45 @@ Analytics Using R - 2018-10-22</div>
 <li>Create an account on github.com</li>
 <li>Go to the github repo: www.github.com/uashogeschoolutrecht/surfR</li>
 <li>Copy the url from the browser</li>
-<li>Log into the RStudio Server@ <a href='https://www.data.innovativetesting.nl' title=''>https://www.data.innovativetesting.nl</a> with your username and password (username = <code>see little note your recieved upon entrance</code>, password = <code>SURFB##TC@MP</code>)</li>
-<li><p>Create a <code>New Project</code> –&gt; <code>Git</code> –&gt; <code>Paste url from clipboard</code> 6 Let the clone finish</p></li>
-<li><p>Start a New Project in</p></li>
-</ol></article></slide>
+<li>Log into the RStudio Server@ <a href='https://www.data.innovativetesting.nl' title=''>https://www.data.innovativetesting.nl</a> with your username and password (username = <code>see little note your recieved upon entrance (surf_bootcamp_...)</code>, password = <code>SURFB##TC@MP</code>)</li>
+<li>Create a <code>New Project</code> –&gt; <code>Git</code> –&gt; <code>Paste url from clipboard</code></li>
+<li>Let the clone finish</li>
+<li>Let’s get started!</li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Workshop materials</h2></hgroup><article  id="workshop-materials">
+
+<ul>
+<li>Find the content of this workshop in &quot;./hands_ons/</li>
+<li>part1_…, part2_… and part3_…, are the order of the workshop rounds</li>
+<li>We start with &ldquo;part1_intro_to_rstudio_and_r.Rmd&rdquo;</li>
+<li>In the folder &ldquo;./miscellaneous&rdquo; you will find extras not covered by the workshop</li>
+<li>the folder &ldquo;./code&rdquo; contains R scripts that are sometimes run on the back without you noticing, or contain handy tools for your own use</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Steps to run R code in an R Markdown file</h2></hgroup><article  id="steps-to-run-r-code-in-an-r-markdown-file">
+
+<ul>
+<li>Code chunks</li>
+</ul>
+
+<p><code>```{r}</code> ## code start</p>
+
+<p><code>```</code> ## code ends</p>
+
+<p>Run this code by:</p>
+
+<ul>
+<li>Clicking the little &lsquo;Run&rsquo; button and select the appropriate or</li>
+<li>Press cntrl + shift + enter to run a complete chunk or</li>
+<li>Press cntrl + enter to run a single line (selection or where the Cursor is at)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Let’s try it out</h2></hgroup><article  id="lets-try-it-out">
+
+<ul>
+<li>Open the file in the current project (surfR): &ldquo;./hands-ons/part1_….Rmd&rdquo;</li>
+</ul></article></slide>
 
 
   <slide class="backdrop"></slide>

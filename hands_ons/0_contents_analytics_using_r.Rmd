@@ -86,7 +86,7 @@ root <- find_root_file(criterion = is_rstudio_project)
 # Credits
 
 Much of this material has been derived in one way or the other from the work of 
-Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the REFERENCES.txt file in the project root.
+Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the resources.Rmd file in the project root.
 
 Thanks to Hadley & Garret for writing the book "R for Data Science" http://r4ds.had.co.nz/ and for their work in general to innovate the R world.
 
@@ -96,8 +96,8 @@ https://github.com/jennybc/happy-git-with-r & http://stat545.com/block007_first-
 
 ## Disclaimer & Licence
 
-_The work in this presentation has been adapted from many sources as mentioned in slide 'Credits'. For a full reference list see the 'REFERENCES.txt' document in the github repo 
-https://www.github.com/usashogeschoolutrecht/surf_research_bootcamp_2018
+The work in this presentation has been adapted from many sources as mentioned in slide 'Credits'. For a full reference list see the 'resources.html' document in the github repo 
+https://www.github.com/uashogeschoolutrecht/surfR
 
 The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-SA
 
@@ -111,13 +111,33 @@ The work presented here may be shared, remixed or adapted as long as the origina
  6. Let the clone finish
  7. Let's get started! 
  
+## Workshop materials
  
- 
- 
- 
- 
- 
- 
- 
- 4. Start a New Project in
+  * Find the content of this workshop in "./hands_ons/
+  * part1_..., part2_... and part3_..., are the order of the workshop rounds
+  * We start with "part1_intro_to_rstudio_and_r.Rmd"
+  * In the folder "./miscellaneous" you will find extras not covered by the workshop
+  * the folder "./code" contains R scripts that are sometimes run on the back without you noticing, or contain handy tools for your own use
+  
+## Steps to run R code in an R Markdown file
 
+ * Code chunks
+ 
+` ```{r} ` ## code start
+
+
+` ``` `    ## code ends
+
+Run this code by:
+
+ * Clicking the little 'Run' button and select the appropriate or
+ * Press cntrl + shift + enter to run a complete chunk or
+ * Press cntrl + enter to run a single line (selection or where the Cursor is at)
+
+## Let's try it out
+
+ * Open the file in the current project (surfR): "./hands-ons/part1_....Rmd"
+ 
+ 
+ 
+  

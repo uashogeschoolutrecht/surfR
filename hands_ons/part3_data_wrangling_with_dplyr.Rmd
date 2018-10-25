@@ -2,10 +2,7 @@
 title: 'Hands-on 3: Wrangling data with the `{dplyr}` package'
 author: "Marc A.T. Teunis"
 date: "11/02/2018"
-output: 
-  ioslides_presentation: 
-    smaller: no
-    widescreen: yes
+output: ioslides_presentation
 ---
 
 ```{r setup, include=FALSE}
@@ -108,6 +105,8 @@ The `.` (dot) is a placeholder for the 'old' variable. If you need to explicitel
 
 # The `{dplyr}` package in detail
 
+_Subsetting, filtering, selecting, summarizing, sorting data(frames)_
+
 ## the {dplyr} package
 The dplyr package makes these steps fast and easy:
 
@@ -139,7 +138,7 @@ __dplyr can work with data frames as is, but if you're dealing with large data, 
 
 # Prepare the data with `{tidyr}` and `{dplyr}`
 
-## Characteristics of the purtussis dataset
+## Characteristics of the pertussis dataset
 
 - The first few lines of the file have comments indicated with `#`
 - There are 53 countries in the dataset

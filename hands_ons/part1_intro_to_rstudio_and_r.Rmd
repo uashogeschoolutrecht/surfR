@@ -39,8 +39,9 @@ Spent 4 minutes explaining to your neighbour:
  - With what type of data do you normally work? 
  - What type of problems are you planning to solve
 
-## What is wrong with this R code?
-**Discuss with you neighbour:**
+## **Discuss with your neighbour:**
+
+**What is wrong with this R code?**
 
  * Determine  what this code is meant to do
  * Find at leat 3 mistakes
@@ -52,13 +53,9 @@ df$var_b[df$var_b == -999] <- NA
 df$var_h[df$var_h == -999] <- NA
 df$var_i[df$var_j == -989] <- NA
 df$var_j[df$var_j == -999] <- NA
-df$var_k[df$var_k == -999] <- NA
-df$var_m[df$var_m ==  999] <- NA
-df$var_n[df$var_n == -999] <- NA
 df$var_o[df$var_n == -988] <- "NA"
 ## there are at least 5 errors in this code
 ```
- 
 __Reference Example (adopted from): Hadley Wickham, "Expressing yourself with R" Lecture  - https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4__ 
 
 ## Functional programming
@@ -92,7 +89,7 @@ replace_x_for_na(df$a)
 
 ## Apply our function to our whole df
 ```{r}
-df <- purrr::modify_if(df, is.numeric, replace_999_for_na)
+df <- purrr::modify_if(df, is.numeric, replace_x_for_na)
 df
 ```
 
@@ -100,36 +97,72 @@ df
 
  * Do one thing good
  * Have no 'side-effects'
- * 'Input-in is input-out' (to make the function 'pipe-pable')
+ * `class(input) = class(output)` (to make the function 'pipe-pable')
  
-_You will hear about the 'pipe (`%>%`)' later_ 
+__You will hear about the 'pipe (`%>%`)' later__ 
 
-# Vector examples
+__This workshop does not cover `writing functions` in dept__
 
-## Numeric
+We hope this small example got you inspired in writing more of your own functions
+
+# Let's create some `objects`
+
+## _'numeric'_ vectors
 ```{r}
-numbers <- c(1:10)
+numbers <- c(1.1:10.5)
+numbers
 sum(numbers)
-mean(numbers)
+integer_vector <- c(1:5)
+integer_vector
 ```
 
-## Random normal distribution 
+## What happens to a 'mixed' vector?
+```{r, mixed}
+vector <- c(1:10, NA, NA, NA,  3, "Python is great!", "R is greater!")
+vector
+missing <- is.na(vector) %>% ## which is NA
+  print() ## prints to the Console
+```
+
+## Type of object
+```{r}
+class(numbers)
+class(missing) ## what is the `class`?
+class(vector)
+class(integer_vector)
+```
+
+## Getting amount of `NA`s
+```{r}
+missing_num <- as.numeric(missing) ## turn logical into numeric  
+missing_num
+sum(missing_num) ## how many TRUEs
+sum(missing) ## implicitly turning  logical into numeric
+sum(is.na(vector)) ##  how many NAs
+```
+
+## Mathematical operations on a `character` vector
+```{r, eval=FALSE}
+sum(vector %>% as.numeric(), na.rm = TRUE) ## Warning sum on character
+```
+
+## Let's create some data 
 ```{r}
 set.seed(1234)
-normals <- rnorm(n = 100000, mean = 5, sd = 1.3)
+normals <- rnorm(n = 100, mean = 5, sd = 1.3)
 df <- normals %>% as_tibble()
+## change number of observations to 10000 and rerun
 ```
 
 ## Plot histogram
 ```{r}
 df %>% ## pipe `%>%` takes a value an puts it in a function
   ggplot(aes(x = value)) +
-  geom_histogram(bins = 100)
-
-## change number of observations to 100000 and rerun
+  geom_histogram(bins = 50)
+## change the `bins` argument to see what happens
 ```
 
-**Discuss with your neighbour:**
+## **Discuss with your neighbour:**
 
  * How would you turn the above plot in a function that takes two arguments: `bins` and `df`?
  * Try it out using this backbone:
@@ -150,24 +183,6 @@ plot_histogram <- function(df, bins){
  
 ```
 
-## What happens to a 'mixed' vector?
-```{r, mixed, eval=FALSE}
-vector <- c(1:10, NA, NA, NA,  3, "Python is great!", "R is greater!")
-vector
-missing <- is.na(vector) ## which is NA
-typeof(missing) ## what is the `type`?
-typeof(vector) ## what is the `type`?
-missing_num <- as.numeric(missing) ## turn logical into numeric  
-missing_num
-sum(missing_num) ## how many TRUEs
-sum(missing) ## impleicitly turning  logical into numeric
-sum(is.na(vector)) ##  how many NAs
-```
-
-## Mathematical operations on a `character` vector
-```{r, eval=FALSE}
-sum(vector %>% as.numeric(), na.rm = TRUE) ## ERROR sum on character
-```
 
 ## R is case sensitive
 
@@ -197,13 +212,9 @@ Another great tool is Google: trying googling the error message, as it's likely 
 
 http://www.statsteachr.org/ or
 https://www.coursera.org/learn/statistical-inference/home/welcome or
-
 https://www.youtube.com/watch?v=ACWuV16tdhY&index=21&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU and
-
 https://www.youtube.com/watch?v=kvmSAXhX9Hs&index=29&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU 
-
 and the rest of Mike Marin's lectures, that are also a really great way to start learning R.
-
 Or try datacamp.com
 
 ## Packages
@@ -271,7 +282,10 @@ seed <- c(1:4)
 set.seed(seed)
 q <- rnorm(n = 10000, mean = 20, sd = 2)
 hist(q)
-## no naming
+```
+
+## No naming
+```{r, eval=FALSE}
 # set.seed(1234)
 qq <- rnorm(10000, 20, 2)
 all(q == qq)
@@ -279,7 +293,7 @@ all(q == qq)
 
 __**Write code for humans AND computers, be explicit!**__
 
-# Data objects
+# R (Data) objects
 
 ## Vectors
 R is an object oriented language: meaning you can create and work with (manipulate/index/access) objects. Vectors are R's elementary objects and 
@@ -298,12 +312,18 @@ nv_1 <- c(2,8,5) # assignment statement
 nv_1 # view the content of the object "nv_1"
 ```
 
-## Class tells you about the classification
+## Class tells you about the type of the variable
 ```{r}
 nv_2 <- c(8.4,5.6,10.1,13.1,2.5,7.8,15.2,3.8,20.9)
 nv_2
 class(nv_2)
 ```
+
+## **Discuss with your neighbour**
+
+ * What happens to the vector values if you run ```nv_2_int <- as.integer(nv_2)``` 
+ * Call ```class(nv_2_int)``` and ```nv_2_int``` to confirm your suspecion
+ * What is the apparent difference between "nummeric" and "integer" vectors? 
 
 # Number notations and rounding
 
@@ -332,19 +352,6 @@ sum(cv)
 
 length(cv)
 class(cv)
-```
-
-## Integers
-```{r}
-int <- as.integer(1:5)
-int
-length(int)
-class(int)
-
-example_int <- c(1.4, 1.6, 7.9)
-typeof(example_int)
-
-as.integer(example_int)
 ```
 
 ## Logical vectors
@@ -381,16 +388,7 @@ z5 <- max(a) - max(b)
 z5
 ```   
 
-## `{tidyverse}` series
-```{r}
-library(modelr)
-x <- c(1:3)
-seq_range(x, n = 6)
-seq_range(x, n = 10, trim = 0.1)
-seq_range(x, by = 0.5) 
-```
-
-## Make pretty `{tidyverse}` sequences
+## Make sequences
 ```{r}
 repetitions <- rep("Luke", times = 10)
 saber <- rep("Sword", length.out = 20)
@@ -433,14 +431,15 @@ plot(h)
 h
 max(h)
 min(h)
+```
 
+## The plot
+```{r}
 
 hist(h[larger_than_0 <- h > 0 | h < -5], main = "title", xlab = "units",
      ylab = "units")
 
-
-
-
+## this code is pretty unreadable, we will see a better way later in the workshop
 
 ```
 
@@ -467,7 +466,7 @@ hist(h[index], breaks = 20)
 The `c()` function can be used to __concatenate__, __combine__ or __create__ objects in R 
 ```{r}
 pp <- c(x, 0, x)
-pp 
+length(pp) 
 sum(c(pp, c(1:5), c(1,2, c(1:10)))) # sum of elements in the 'concatenated' vector
 ```
 
@@ -511,29 +510,14 @@ tbl_df <- tibble(x = d, y = c)
 ```{r, results='hold'}
 ggplot(data = tbl_df, aes(x = x, y = y)) +
   geom_point(colour = "darkred", size = 3) +
-  geom_smooth(method = "glm", se = TRUE, formula = y ~ x, colour =         "darkblue") +
+  geom_smooth(method = "lm", se = TRUE, 
+              formula = y ~ x, colour = "darkblue") +
   ggtitle("Regression Example") + xlab("Terms") + ylab("Response")
 ```
 
 ## Combine the two in one slide
 ```{r, echo=FALSE, results='hold'}
 source(file.path(root, "code", "panel_ggplot2_base_combined.R"))
-```
-
-## Handeling character vectors
-What happens if you use arithmetic functions on character vectors and numeric vectors?
-```{r, eval=FALSE}
-w <- c("1", "2")
-u <- c("a", "b", "c")
-z6 <- w-y  
-z7 <- u+w
-``` 
-This does not work because the vectors are of different type. We can use the paste command for this
-```{r}
-w <- c("1", "2")
-u <- c("a", "b", "c")
-z8 <- paste(u,w, sep = "_")
-z8 ## because w is shorter than u, it get's recycled over u
 ```
 
 ## Let's clean up the workspace
@@ -551,7 +535,7 @@ When using R for data analysis you will most likely work with data in a matrix, 
 
 A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represnet different variables.  
 
-The dataframe and the list are the most widely used datastructures when considering experimental Biological data. 
+The dataframe and the list are the most widely used datastructures when considering experimental data. 
 
 ## Create a List
 ```{r}
@@ -587,8 +571,10 @@ lst[[6]][2] # returns the value of the second element for your variable
 ```{r}
 purrr::map(lst, is.na)
 ```
+
 ## The Dataframe
-The dataframe is the most widely used data structure in the context of experimental biology and chemistry. **Remember "Tidy data!"**   
+The dataframe is the most widely used data structure 
+**Remember "Tidy data!"**   
 
 ## Creating a data frame from individual vectors
 ```{r}
@@ -611,7 +597,7 @@ people_tbl
 ```
 
 ## Viewing the contents of a dataframe
-```{r}
+```{r, eval=FALSE}
 summary(people_df)
 table(people_df)
 
@@ -628,7 +614,7 @@ Using the index "[]" on a dataframe is a bit tricky. The dataframe always consis
 
 `dataframe[row number(s), column number(s)]`
 
-```{r}
+```{r, eval=FALSE}
 people_df$age[1] 	# first element of this vector
 people_df[,2] 	# content of 2nd variable (column) which is a character vector -> factor
 people_df[1,] 	# content of the 1st row
@@ -667,7 +653,7 @@ skin %>% head(3)
 ```
 
 ## Inspecting the skin dataframe
-```{r}
+```{r, eval=FALSE}
 head(skin)	 # content of the data frame
 dim(skin)
 attributes(skin)
@@ -680,149 +666,12 @@ summary(skin)
 mean(skin$`Genotype A`)
 mean(skin$`Genotype B`)
 
-# to remove the NA
+# to remove the NA, take care: consider leaving NAs in and use arguments like na.rm = TRUE
 skin_noNA <- na.omit(skin)
 mean(skin_noNA$`Genotype B`)
 ``` 
-
-## Smoking example with multiple variables
-Create data frame with 4 variables:
-gender, 
-smoke, 
-age,
-weigth
-
-## Create individual vectors
-```{r}
-set.seed(6000) # set it at the same number, then we will all produce the same output
-gender<-c(sample(c(1,2), size=1000, replace=TRUE))
-smoke<-c(sample(c(1,2), size=1000, replace=TRUE))
-age<-c(sample(c(1,2,3), size=1000, replace=TRUE))
-weight<-round(rnorm(1000, mean=65, sd=10),1)
-smoking <- data.frame(cbind(gender, smoke, age, weight))
-```
-
-## `head(x, ...)`
-```{r}
-head(smoking, 5)
-smoking[1:5,]
-``` 
-
-## Replace numbers by descriptive labels 
-```{r}
-# replace numbers by characters
-smoking$genderf=factor(smoking$gender, labels=c("female","male"))
-table(smoking$genderf,smoking$gender)
-smoking$smokef=factor(smoking$smoke, labels=c("Y","N"))
-table(smoking$smokef,smoking$smoke)
-smoking$agecf=factor(smoking$age, labels=c("A: <15","B: 15-30","C: >30"))
-table(smoking$agecf,smoking$age)
-summary(smoking)
-
-``` 
-
-## Subsetting data frame; the easier {dplyr} way
-```{r}
-library(tidyverse)
-names(smoking)
-smoking_male <- smoking %>% filter(genderf == "male")
-smoking_age_gender <- smoking %>% select(genderf, agecf)
-
-```
-
-## Or the base-R way
-```{r}
-library(tidyverse)
-names(smoking)
-# create a logical index
-smoking_male_index <- smoking[, "genderf"] == "male" 
-smoking_male <- smoking[smoking_male_index, ]
-# slecting only age and gender
-smoking_age_gender <- smoking_male[, c(1,3)]
-```
-
-## Summarizing data
-For summarizing data there are many ways in R (as is the case with many operations). I find the dplyr way the most intuitive. Using dplyr has the advantage that you can easily built on existing function and examples, because the code is faily easy to understand.
-
-## The pipe or %>% operator
-
- * One thing that makes dplyr great is that it works with the `%>%` symbol. Which is in programming jargon also called the "pipe" symbol.
- * The pipe symbol takes the previous result of an operation and put it in the next.
- * The pipe symbol can replace the use of annoying round brackets: or "(parentheses)" 
-
-## Example 
-If we want to calculate the sum, of the square root of the mean, of two nummeric vectors (each of length = 1000) we could do:
-```{r}
-library(dplyr)
-set.seed(12345)    
-zzz <- sqrt(mean(x <- rnorm(10000, mean = 34, sd = 2))) +
-sqrt(mean(y <- rnorm(10000, mean = 23, sd = 4)))
-zzz
-```
-
-The above is almost impossible to read because of all the round brackets, note the closing brackets: 3 of them!!
-
-## let's try the dplyr way with the %>% (pipe) operator
-```{r}
-set.seed(12345)
-qqq <- rnorm(10000, mean = 34, sd = 2) %>% 
-  mean() %>% 
-  sqrt() + rnorm(10000, mean = 23, sd = 4) %>% 
-  mean() %>% 
-  sqrt()
-qqq
-
-zzz == qqq
-```
-
-The dplyr way is a lot better is it not? Do you get what the above (dplyr-way) lines do?
-
-## The dplyr way explained 
- 1. the result of the fist vector (1000 random numbers, with mean of 34 and a sd of 2 is piped into the function mean, which calculates the mean of these 1000 numbers (which will be around 34)
- 2. From that the square root is taken by piping the mean in the function sqrt()
- 3. The result of the firt vector is added to the calculation of the second vector (which is done the same way as the first).
- 4. The result is qqq
- 5. Is qqq equal to zzz, which we calculated the "old-fashioned" mathematical way? YES! 
-
-## Let's apply the above to our smoking dataset
-
- * Usually, if we want to make a graph we need some sort of summarizing variable that indicates wat is going on, e.g. a group mean and standard deviation.
-
- * From the smoking dataset we will genrate a new dataframe with average weight, grouped by gender, age and grouped by smoking or non smoking. We will use dplyr verse to do so.
-
- * I will also show you how to sort the data, let's say to decreasing weight, by using the dplyr function 'arrange'. 
-
-## Summary of the smoking data
-```{r}
-## it is handy to have the names of the dataset variables at hand when writing pipes
-
-names(smoking)
-str(smoking)
-```
-
-## Example `pipe`
-```{r}
-smoking_weight <- smoking %>% select(genderf, smokef, weight, agecf) %>%
-  group_by(genderf, smokef, agecf) %>% summarise(mean_weight = mean(weight)) %>%
-  arrange(desc(mean_weight))
-
-head(smoking_weight)
-```
-
-## Looking in detail at the pipe
-
-Let's look at what is going on above.
-
-The smoking_weight dataset contains newly created, more descriptive denominators, we will use those. 
- 
- 1. The first step is to inspect the dataframe to see if the grouping variables are set to "factor" 
- 2. The second step is to select the proper variables to work with
- 3. Than the data is grouped by the genderf, agecf and by the smokef variables
- 4. Summarise creates a new variable `mean_weight` that is what it says: the mean weight for the groups defined.
- 5. Finally, the data is sorted, according the newly created mean_weight variable, in decending order "(dec(mean_weight))". If we want ascending order we can just use arrange(mean_weight). Arrange has the default to order the variable in ascending order.
 
 ## Generate R-code from this Rmd
 ```{r, eval=FALSE}
 knitr::purl("hands_ons/part1_intro_to_rstudio_and_r.Rmd", output = "./hands_ons/part1_intro_to_rstudio_and_r.R")
 ```
-
