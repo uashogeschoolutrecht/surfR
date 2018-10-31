@@ -1,8 +1,12 @@
 ---
-title: 'Hands-on 3: Wrangling data with the `{dplyr}` package'
-author: "Marc A.T. Teunis"
-date: "11/02/2018"
-output: ioslides_presentation
+title: 'Hands-on part 3 - Data wrangling'
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
+output:
+  ioslides_presentation: 
+    highlight: pygments
+    widescreen: yes
 ---
 
 ```{r setup, include=FALSE}

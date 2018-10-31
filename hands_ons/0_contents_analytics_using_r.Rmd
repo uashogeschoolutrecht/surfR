@@ -1,34 +1,12 @@
 ---
 title: "Analytics Using R - Contents"
 author: "Marc A.T. Teunis"
-date: "`r Sys.Date()`"
+date: "November 2nd 2018"
 output:
   ioslides_presentation: 
     highlight: pygments
     widescreen: yes
 ---
-<style>
-
-.footer {
-    font-size: 16pt;
-    color: Black;
-    font-family: 'Helvetica'
-    content: attr(label);
-    position: absolute;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
-    text-align:center;
-    bottom: 10px;
-    line-height: 1.9;
-    display: block;
-}
-
-</style>
-
-<div class="footer" style="margin-top;font-size:120%;"> 
-Analytics Using R - `r Sys.Date()` </div>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 3)
@@ -43,13 +21,13 @@ root <- find_root_file(criterion = is_rstudio_project)
 
 ## Programme
 
- - 10:30 Start
- - 10:40 Use case 1 
- - 11:00 Hands-on Part 1; RStudio and R-basics
+ - 10:30 Start & Introduction Jan-Willem Lankhaar
+ - 10:40 Use case 1: Karin Hagoort - UMC Utrecht 
+ - 11:00 Hands-on Part 1; RStudio and R-basics 
  - 11:45 -- 12:30 LUNCH
- - 12:30 Hands-on Part 2  
- - 15:00 Use case 2
- - 15:30 Hands-on Part 3
+ - 12:30 Hands-on Part 2; Visualizations  
+ - 15:00 Use case 2: Tobias Verbeke & Daan Seynaeve
+ - 15:30 Hands-on Part 3; Data Wrangling
  - 17:00 Drinks & Networking
 
 # Workshop contents
@@ -57,26 +35,28 @@ root <- find_root_file(criterion = is_rstudio_project)
 ## **PART 1**
 
  * Start; "Reproducible research with R" - 'Jan-Willem Lankhaar'
- * Use case 1; "Big Data in Psychiatry" - 'Karin Hagoort'
+ * Use case 1; "Big Data in Psychiatry" - Karin Hagoort"
+ * Getting the materials from www.github.com (creating an account first)
  * Hands-on 1; Github, RStudio, R-basics
  
  ------ exercise ------
 
 ## **PART 2** 
  
- * Recap R-basics 
+ * (Recap R-basics) 
  * Hands-on 2; Visualizations with `{ggplot2}`
  
  ------ exercise ------
  
 ## **PART 3**  
  
- * Use case "Open Analytics" - 30 min.
+ * Use case "Open Analytics; Tobias Verbeke & Daan Seynaeve".
  * Hands-on 3; Data wrangling with `{dplyr}`
  
- -- in between exercises --
+ -- in between exercises **"Discuss with your neigbour"** --
  
 ## Datasets
+The datasets can be found in your projectfolder after getting the workshop materials
 
  * `gapminder`  
  * `heights_outliers`
@@ -86,7 +66,7 @@ root <- find_root_file(criterion = is_rstudio_project)
 # Credits
 
 Much of this material has been derived in one way or the other from the work of 
-Hadley Wickham and Garret Grolemund and many other. For a more elborate reference list see the resources.Rmd file in the project root.
+Hadley Wickham and Garret Grolemund and many others. For a more elborate reference list see the resources.html file in the project root.
 
 Thanks to Hadley & Garret for writing the book "R for Data Science" http://r4ds.had.co.nz/ and for their work in general to innovate the R world.
 
@@ -99,14 +79,21 @@ https://github.com/jennybc/happy-git-with-r & http://stat545.com/block007_first-
 The work in this presentation has been adapted from many sources as mentioned in slide 'Credits'. For a full reference list see the 'resources.html' document in the github repo 
 https://www.github.com/uashogeschoolutrecht/surfR
 
-The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-SA
+The work presented here may be shared, remixed or adapted as long as the original references and the authors of this document are mentioned in the redistibution: CC BY-NC 4.0
+
+## Feedback
+
+ * This is the first time we do this R Workshop
+ * We appreciate to hear from you during and afterwards
+ * We have opened a Slack channel (https://surfrgroup.slack.com) that you can join. Here we can exchange R-related questions, tutorials, problems and other R- and Data Science related stuff, during and after today  
+ 
 
 ## Getting the workshop materials
 
- 1. Create an account on github.com
- 2. Go to the github repo: www.github.com/uashogeschoolutrecht/surfR
+ 1. Create an account on https://www.github.com
+ 2. Go to the github repo: https://www.github.com/uashogeschoolutrecht/surfR
  3. Copy the url from the browser
- 4. Log into the RStudio Server@ https://www.data.innovativetesting.nl with your username and password (username = `see little note your recieved upon entrance (surf_bootcamp_...)`, password = `SURFB##TC@MP`)
+ 4. Log into the RStudio Server@ https://data.innovativetesting.nl with your username and password (username = `see little note your recieved upon entrance (surf_bootcamp_...)`, password = `SURFB##TC@MP`)
  5. Create a `New Project` --> `Git` --> `Paste url from clipboard`
  6. Let the clone finish
  7. Let's get started! 
@@ -117,7 +104,7 @@ The work presented here may be shared, remixed or adapted as long as the origina
   * part1_..., part2_... and part3_..., are the order of the workshop rounds
   * We start with "part1_intro_to_rstudio_and_r.Rmd"
   * In the folder "./miscellaneous" you will find extras not covered by the workshop
-  * the folder "./code" contains R scripts that are sometimes run on the back without you noticing, or contain handy tools for your own use
+  * the folder "./code" contains R scripts that are sometimes run on the back without you noticing, or contain handy tools for your own use, or to build upon.
   
 ## Steps to run R code in an R Markdown file
 
@@ -138,6 +125,5 @@ Run this code by:
 
  * Open the file in the current project (surfR): "./hands-ons/part1_....Rmd"
  
- 
- 
+
   

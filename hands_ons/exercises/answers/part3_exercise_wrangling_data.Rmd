@@ -1,10 +1,10 @@
 ---
 title: "dplyr - Exercise"
-author: "Marc A.T. Teunis"
-date: '`r Sys.Date()`'
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
 output:
-  html_document:
-    css: ~/hp_r_course/exercises/exercises_style.css
+  html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -136,12 +136,13 @@ sum(is.na(heights_complete))
 
 3A) Filter all people that have a weight of over 200 lbs.
 ```{r}
-heights_complete <- tibble(heights_complete)
+heights_complete <- as.tibble(heights_complete)
 
 over_200 <- heights_complete %>% 
  filter(weight > 200)
 
-over_200 <- filter(heights_complete, weight > 200)
+over_200 <- filter(heights_complete, weight > 200) %>%
+  arrange(weight)
 
 ```
 
@@ -151,10 +152,12 @@ over_200 <- filter(heights_complete, weight > 200)
 ```{r}
 
 haviest_race <- over_200 %>%
-    summarise(frequency = count(weight)) %>%
-  arrange(desc(mean_weight))
+    group_by(race) %>%
+    summarise(frequency = n()) %>%
+  arrange(desc(frequency))
 haviest_race
 
+## other option
 summary <- summary(over_200)
 summary
 str(summary)
@@ -187,13 +190,9 @@ five_tallest_hispanic_men$height
 
 
 # mean height
-mean_height_five_tallest_hispanic_men <- 
-mean_height_five_tallest_hispanic_men
 
-  mean(five_tallest_hispanic_men$height)
-
-  mean_height_five_tallest_hispanic_men
-
+mean <- mean(five_tallest_hispanic_men$height)
+mean
 ```
 
 3D) Find the two tallest women in the data. See if you can find two men that match the weight and heigt of these women.
@@ -336,6 +335,8 @@ heights_summary <- heights_complete %>%
 
 5C) Is there a difference between males and females. For which race is this difference the biggest?
 
+
+
 ```{r}
 males <- heights_summary %>%
   filter(sex == "male") %>% 
@@ -358,4 +359,7 @@ difference %>%
   mutate(delta_income = (mean_income_m - mean_income_f)) #%>%
   #  arrange(delta_income)
 ```
+
+
+
 

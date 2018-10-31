@@ -1,7 +1,8 @@
 ---
 title: "Exercise - Visualizations"
-author: "Marc A.T. Teunis"
-date: "`r Sys.Date()`"
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
 output:
   html_document: default
 ---
@@ -249,7 +250,7 @@ SOURCE:
 Rousseeuw, P.J. & Leroy, A.M. (1987) Robust Regression and Outlier Detection. Wiley, p. 57.
 
 Write a code chunk that loads the file `"./data/Animals.xls"` into R. 
-You may use any function you like, but you are not allowed to transform the data in any way. Name the file `animals` as a datatable/dataframe/tibble in R 
+You may use any function you like, but you are not allowed to transform the data in any way using e.g. Excel. Name the dataframe `animals` as a datatable/dataframe/tibble in R. 
 
 
 **TIPs** 
@@ -258,7 +259,7 @@ You may use any function you like, but you are not allowed to transform the data
  - Rember to use `library` to load the required package(s)
  - The first row that contains data is the "Mountain Beaver" observation
  - Remember that in some functions you can also set `header = FALSE`
- - The variables in this dataset need to be `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER!. These are the so-called `names` of the dataframe and can be set or checked using the function `names()`
+ - The variables in this dataset need to be `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER! These are the so-called `names` of the dataframe and can be set or checked using the function `names()`
  - Remember `dplyr::select`, `dplyr::filter()`, `dplyr::group_by`, `dplyr::summarize()`
  
 **ANSWER:**

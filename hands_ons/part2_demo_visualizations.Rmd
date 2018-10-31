@@ -1,16 +1,20 @@
 ---
-title: "Hands-on 2: Visualizations"
+title: "Hands-on part 2 - Visualizations"
 subtitle: "SURF Research Bootcamp"
-author: "Marc A.T. Teunis"
-date: "`r Sys.Date()`"
-output: html_document
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
+output:
+  ioslides_presentation: 
+    highlight: pygments
+    widescreen: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       error = FALSE,
-                      message = FALSE)
+                      message = FALSE, 
+                      fig.width = 5, fig.height = 3.5)
 ```
 
 ```{r, root_1, include=FALSE}
@@ -24,6 +28,8 @@ root <- find_root_file(criterion = is_rstudio_project)
 https://simplystatistics.org/2018/01/22/the-dslabs-package-provides-datasets-for-teaching-data-science/
 
 https://github.com/rbind/simplystats
+
+"R for Data Science", Hadley Wickham & Garret Grolemund
 
 ## Gapminder
 https://www.gapminder.org/tools/#$state$time$value=2018;;&chart-type=bubbles 
@@ -42,6 +48,8 @@ install.packages("dslabs")
 
 ## Loading the data package `{dslabs}` and other packages used
 ```{r}
+knitr::include_graphics(path = file.path(root, "images",
+                                         "hex-ggplot2.png"))
 library(tidyverse)
 library(dslabs)
 library(lubridate)
@@ -49,7 +57,7 @@ library(lubridate)
 
 ## Datasets included in the `{dslabs}` package
 ```{r, eval=FALSE}
-data(package="dslabs")
+data(package="dslabs") %>% print()
 ```
 
 ## Getting original data wrangling scripts included also in the `{dslabs}` package
@@ -74,14 +82,12 @@ The gapminder dataset contains a number of measurements on health and income out
 ## Inspecting the dataset with R
 ```{r}
 gapminder <- gapminder %>% as_tibble()
-gapminder
+gapminder %>% head(2)
 names(gapminder)
 ```
 
 ## A very simple example to start with
-We can plot two numeric variable against each other to spot relationships
 ```{r}
-names(gapminder)
 gapminder %>% 
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
@@ -121,8 +127,10 @@ gapminder %>%
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
   geom_point(aes(colour = continent))
+```
 
 ## or combined with `alpha`
+```{r}
 gapminder %>% 
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
@@ -131,9 +139,21 @@ gapminder %>%
 
 ```
 
+## **Do it yourself:**
+
+ - Try adjusting some of the arguments in the previous `ggplot2` call. 
+For example, adjust the `alpha = ...` or change the variable in `x = ...`, `y = ...` or `colour = ...`
+ - `names(gapminder)` gives you the variable names that you can change
+ - Show and discuss the resulting plot with your neighbour
+ - What do you think this part does: 
+ 
+ `guides(colour = guide_legend(override.aes = list(alpha = 1)))`
+ 
+ - Try to find out by disabling with `#`
+
 ## 3. Reduce the data in the plot
 ```{r}
-gapminder %>% 
+reduce_data_plot <- gapminder %>% 
   filter(continent == "Africa" | continent == "Europe") %>%
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
@@ -144,28 +164,65 @@ gapminder %>%
 
 ```
 
+## Plot
+```{r}
+reduce_data_plot
+```
+
+## **Discuss with you neighbour:**
+
+ - What does the the `aes()` part of the `geom_point()` do?
+ - Compare the code below with the code above, can you spot the difference, what is the advantage of the code below?
+ 
+```{r, eval=FALSE}
+reduce_data_plot <- gapminder %>% 
+  filter(continent == "Africa" | continent == "Europe") %>%
+  ggplot(aes(x = fertility,
+             y = life_expectancy, colour = continent)) +
+  geom_point(alpha = 0.2) +
+  ## override the alpha setting for the points in the legend:
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) 
+```
+
 ## 4. Mapping a shape to a variable
 ```{r}
 ## or e.g. show only two years and map a shape to continent
-gapminder %>% 
+shape_plot <- gapminder %>% 
   dplyr::filter(continent == "Africa" | continent == "Europe",
-         year == "1970" | year == "2010") %>%
+         year == "1960" | year == "2010") %>%
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
-  geom_point(aes(colour = as.character(year), shape = continent), alpha = 0.7)
+  geom_point(aes(colour = as_factor(as.character(year)), 
+                 shape = continent), 
+             alpha = 0.7)
 ```
 
-## 5.facet_wrap(~ year) Facetting - create panels for 'categorical' or so-called 'factor' variables in R
+## **Do it youself**
+
+ - Try removing the `as_factor(as.character(year))` call and replace this by only `year` above and rerun the plot, what happened?
+
+## Plot
 ```{r}
-gapminder %>% 
+shape_plot
+```
+
+## 5. Facetting
+
+Create panels for 'categorical' or so-called 'factor' variables in R
+```{r}
+facets_plot <- gapminder %>% 
   dplyr::filter(continent == "Africa" | continent == "Europe",
          year == "1960" | year == "2010") %>%
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
   geom_point(aes(colour = continent), alpha = 0.5) +
   facet_wrap(~ year)
-  
-  
+
+```
+
+## Plot
+```{r}
+facets_plot
 ```
 
 ## 6. Summarize the data
@@ -174,7 +231,7 @@ library(ggrepel)
 
 years <- c("1960", "1970", "1980", "1990", "2000", "2010")
 
-gapminder %>% 
+summarize_plot <- gapminder %>% 
   dplyr::filter(year %in% years) %>%
   group_by(continent, year) %>%
   summarise(mean_life_expectancy = mean(life_expectancy),
@@ -183,9 +240,11 @@ gapminder %>%
              y = mean_life_expectancy)) +
   geom_point(aes(colour = continent), alpha = 0.7) 
 
+```
 
-#+
- # geom_label_repel(aes(label=year), size = 2)
+## Plot
+```{r}
+summarize_plot
 ```
 
 ## Adding labels to the points with `{ggrepel}`
@@ -194,7 +253,7 @@ library(ggrepel)
 
 years <- c("1960", "1970", "1980", "1990", "2000", "2010")
 
-gapminder %>% 
+labels_plot <- gapminder %>% 
   dplyr::filter(year %in% years) %>%
   group_by(continent, year) %>%
   summarise(mean_life_expectancy = mean(life_expectancy),
@@ -206,9 +265,14 @@ gapminder %>%
   
 ```
 
+## Plot
+```{r}
+labels_plot
+```
+
 ## 7. Displaying a model / relationship that represents the data (and not show the actual data itself) 
 ```{r}
-
+## Model
 lm <- gapminder %>% lm(formula = life_expectancy ~ fertility)
 
 correlation <- cor.test(x = gapminder$fertility, y = gapminder$life_expectancy, method = "pearson")
@@ -218,18 +282,26 @@ correlation <- cor.test(x = gapminder$fertility, y = gapminder$life_expectancy, 
 predicted_df <- data.frame(gapminder_pred = predict(lm, gapminder), 
                            fertility = gapminder$fertility)
 
+```
 
-gapminder %>% 
+## Add model to plot
+```{r}
+model_plot <- gapminder %>% 
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
-  geom_point(alpha = 0.03) +
+#  geom_point(alpha = 0.03) +
   geom_line(data = predicted_df, aes(x = fertility, 
                                      y = gapminder_pred),
             colour = "darkred", size = 1)
 ```
 
-## plotting statistics to the graph with the `{ggpubr}` package
+## Plot
 ```{r}
+model_plot
+```
+
+## Plotting statistics to the graph with the `{ggpubr}` package
+```{r, echo=FALSE}
 library(ggpubr)
 gapminder %>% 
   ggplot(aes(x = fertility,
@@ -245,7 +317,7 @@ gapminder %>%
 
 ```
 
-## Using a smoother `geom_smooth`
+## Using a smoother `geom_smooth` to display potential relationships
 ```{r}
 gapminder %>% 
   ggplot(aes(x = fertility,
@@ -256,24 +328,33 @@ gapminder %>%
   theme_bw()
 ```
 
+## Recap **Discuss with your neighbour**
+Which tricks can we use to reduce the dimensionality of the plotted data (prevent overpltting)?
+
+Try listing at least 6 methods:
+
 ## Relation between `gdp`, Gross Domestic Product and `infant_mortality` rate. 
 https://en.wikipedia.org/wiki/Gross_domestic_product
 Wikipedia: Gross Domestic Product (GDP) is a monetary measure of the market value of all the final goods and services produced in a period of time, often annually or quarterly. Nominal GDP estimates are commonly used to determine the economic performance of a whole country or region, and to make international comparisons. 
 ```{r}
-gapminder %>%
+gdp_infant_plot <- gapminder %>%
   dplyr::filter(continent == "Europe" | continent == "Africa") %>%
   ggplot(aes(x = gdp, 
              y = infant_mortality)) +
-  geom_point() +
-  geom_smooth(colour = "Darkred", size = 2, se = FALSE)
+  geom_point() 
 
+```
+
+## Plot
+```{r}
+gdp_infant_plot
 ```
 
 ## Adding a bit of colour
 The figure above does not provide any clue on a possible difference between Europe and Africa, nor does it convey any information on trends over time.
 
 ```{r}
-gapminder %>%
+colour_to_continent <- gapminder %>%
   dplyr::filter(continent == "Europe" | continent == "Africa") %>%
   ggplot(aes(x = gdp, 
              y = infant_mortality)) +
@@ -281,10 +362,50 @@ gapminder %>%
 
 ```
 
-## Adding facets
-Let's investigate whether things have improved over time. We compare 1960 vs 2010 by using a panel of two figures. Adding simply `facet_wrap( ~ facetting_variable)` will do the trick.
+## Plot
 ```{r}
-gapminder %>%
+colour_to_continent
+```
+
+## Adding facets
+Let's investigate whether things have improved over time. We compare 1960 to 2010 by using a panel of two figures. Adding simply `facet_wrap( ~ facetting_variable)` will do the trick.
+
+## **Discuss with your neighbour:**
+
+Without looking ahead try to contruct a plot that conveys information on the `gdp` per continent, over time. Try to recycle some of the examples above.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+facets_gdp_infant <- gapminder %>%
   dplyr::filter(continent == "Europe" | continent == "Africa",
                 year == "1960" | year == "2010") %>%
   ggplot(aes(x = gdp, 
@@ -296,10 +417,15 @@ gapminder %>%
 
 ```
 
+## Plot
+```{r}
+facets_gdp_infant
+```
+
 ## Mapping to continuous variables
 So far we have been mapping colours and shapes to categorical variables. You can also map to continuous variables though.
 ```{r}
-gapminder %>%
+continuous <- gapminder %>%
   dplyr::filter(country == "Netherlands" | 
                 country == "China" |
                 country == "India") %>%
@@ -308,23 +434,49 @@ gapminder %>%
          y = life_expectancy)) +
   geom_point(aes(size = population, colour = country)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  geom_line(aes(group = country)) +
   theme_bw()
 ```
 
+## Plot
+```{r}
+continuous
+```
+
+## **Discuss with your neighbour**
+Try plotting the `infant_mortality` against the filtered years for the same countries as the code above (Netherlands, India, China), recycling some of the code above. Discuss the resulting graph in the light of the life_expectancy graph, what do you think about the the developments in China? 
+
+Want to know more? see: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4331212/
+Babxiarz, 2016
+
+## **Discuss with your neighbour**
+Analyze the following code chunk: try running line by line to see what happens:
+
+ - How many observations are we plotting here?
+ - How many variables are we plotting?
+ - Try adding or removing variables to the `group_by()` statement, what happens if you do?
+
 ## Summarize per continent and sum population
 ```{r}
-gapminder %>% 
+population_plot <- gapminder %>% 
   dplyr::group_by(continent, year) %>%
   dplyr::filter(year %in% years) %>%
   summarise(sum_population = sum(population)) %>% 
   ggplot(aes(x = year, 
              y = sum_population)) +
-    geom_point(aes(size = sum_population, colour = continent))
+    geom_point(aes(colour = continent)) +
+    geom_line(aes(group = continent,
+                  colour = continent))
+```
+
+## Plot
+```{r}
+population_plot
 ```
 
 ## Ranking data
 ```{r}
-gapminder %>%
+ranking_plot <- gapminder %>%
   dplyr::filter(continent == "Europe",
                 year == 2010) %>%
   ggplot(aes(x = reorder(as_factor(country), population),
@@ -339,8 +491,13 @@ gapminder %>%
 
 ```
 
+## Plot
+```{r}
+ranking_plot
+```
+
 ## Let's look at a time series
-We filter for "Americas" and "Oceanie" and look at `life_expectancy` over the years.
+We filter for "Americas" and "Oceania" and look at `life_expectancy` over the years.
 ```{r}
 ## without summarizing for countries
 gapminder$continent %>% as_factor() %>% levels()

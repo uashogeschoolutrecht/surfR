@@ -1,7 +1,8 @@
 ---
 title: "R basics - Exercise"
-author: "Marc A.T. Teunis"
-date: '`r Sys.Date()`'
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
 output:
   html_document:
     css: ~/hp_r_course/exercises/exercises_style.css

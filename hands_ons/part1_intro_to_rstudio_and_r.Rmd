@@ -1,7 +1,8 @@
 ---
-title: "Intro to R"
-author: "Marc A.T. Teunis; Jan-Willem Lankhaar"
-date: "11/02/2018"
+title: "Hands-on Part 1 - Intro to RStudio and R"
+subtitle: "SURFSara Research Bootcamp"
+author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
+date: "November 2nd 2018"
 output:
   ioslides_presentation: 
     highlight: pygments
@@ -24,8 +25,7 @@ library(rprojroot)
 root <- find_root_file(criterion = is_rstudio_project)
 ```
 
-## Load packages
-```{r}
+```{r, include=FALSE}
 library(tidyverse)
 ```
 
@@ -35,11 +35,11 @@ Spent 4 minutes explaining to your neighbour:
 
  - What brings you here? What are your expectations?
  - What characterizes you regarding `R`:
- `beginner`, `intermediate`, `advanced`
+ `Beginner`, `Intermediate`, `Advanced`, `Super Man`?
  - With what type of data do you normally work? 
- - What type of problems are you planning to solve
+ - What type of problems are you solving, or planning to solve?
 
-## **Discuss with your neighbour:**
+## **Discuss with your neighbour:** {.smaller}
 
 **What is wrong with this R code?**
 
@@ -48,7 +48,7 @@ Spent 4 minutes explaining to your neighbour:
  * What would you do to prevent these kind of mistakes?
 
 ```{r, eval=FALSE}
-df$var_a[df$var_a == -999] <- NA
+df$var_a[df$var_a ==  999] <- NA
 df$var_b[df$var_b == -999] <- NA
 df$var_h[df$var_h == -999] <- NA
 df$var_i[df$var_j == -989] <- NA
@@ -56,7 +56,7 @@ df$var_j[df$var_j == -999] <- NA
 df$var_o[df$var_n == -988] <- "NA"
 ## there are at least 5 errors in this code
 ```
-__Reference Example (adopted from): Hadley Wickham, "Expressing yourself with R" Lecture  - https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4__ 
+Reference: Example (adapted from): Hadley Wickham, "Expressing yourself_ with R" Lecture  - https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4
 
 ## Functional programming
 
@@ -73,7 +73,10 @@ df <- tibble(a = c(1:9, -999),
 df
 ```
 
-## Writing a function that replaces `-999` for `NA`
+## Writing a function that replaces 
+`a designated number or string` 
+for `NA`
+
 ```{r}
 replace_x_for_na <- function(x){
   
@@ -105,7 +108,8 @@ __This workshop does not cover `writing functions` in dept__
 
 We hope this small example got you inspired in writing more of your own functions
 
-# Let's create some `objects`
+# Let's create some R objects
+### Switch to RStudio RMarkdown document "part1_intro_to_rstudio_and_r.Rmd"
 
 ## _'numeric'_ vectors
 ```{r}
@@ -143,7 +147,7 @@ sum(is.na(vector)) ##  how many NAs
 
 ## Mathematical operations on a `character` vector
 ```{r, eval=FALSE}
-sum(vector %>% as.numeric(), na.rm = TRUE) ## Warning sum on character
+sum(vector) ## Warning sum on character
 ```
 
 ## Let's create some data 
@@ -188,52 +192,77 @@ plot_histogram <- function(df, bins){
 
 *_Important note: R is case-sensitive, meaning that it will matter whether you use capital or lower case, keep this in mind if you get a cryptic warning or error!_*
 
-## Help getting started with R
+## Programming (in R) can be frustrating {.build}
 
  * Writing (R) code can be challenging 
  * You will get mind-boggling errors. 
  * R is extremely picky about capitals and every opening `(`, `[` or `{` must be matched by a closing `)`, `]` or `}`. 
 
-Mind that `.` is the default decimal placeholder!  
+Mind that in R `.` is the default decimal placeholder!  
 
-If you're stuck, try the help. You can get help about any R function by running `?function_name` and `?package_name` or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
+## Getting help {.build}
 
-Another great tool is Google: trying googling the error message, as it's likely someone else has had the same problem, and has gotten help online.
+ * If you're stuck, try the help (`?` or `??` or `help()`) function. 
+ * You can get help about any R function by running `?function_name` and `?package_name` 
+ * or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
+ * Another great tool is `Google` or `Stack Overflow`: trying googling the error message, as it's likely someone else has had the same problem, and has gotten help online.
 
-## Statistics and R
+## Statistics and R {.build}
 
  * This workshop does not cover statistical applications of R
- * Allbeit that we will look at an example of a linear regression later on
+ * All be it, we will look at an example of a linear regression later on
  * Nowadays R is a versatile language and can be used for various applications, but it was originally designed as a language for performing statistical analyses 
- * This is why very many statistical applications are available for R. 
- * To start learning about statisics and R, I can highly recommend the book "Discovering Statistics Using R" by Dr. Andy Field: https://uk.sagepub.com/en-gb/eur/discovering-statistics-using-r/book236067%20
+ * This is why very many statistical applications are available for R
+ * To start learning about statisics and R, I can highly recommend the book "Discovering Statistics Using R" by Dr. Andy Field:
+ 
+https://uk.sagepub.com/en-gb/eur/discovering-statistics-using-r/book236067%20
 
-## For more on learning R in the context of statistics: start e.g. with:
+## For more on learning R, start e.g. with:
 
 http://www.statsteachr.org/ or
+
 https://www.coursera.org/learn/statistical-inference/home/welcome or
+
 https://www.youtube.com/watch?v=ACWuV16tdhY&index=21&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU and
+
 https://www.youtube.com/watch?v=kvmSAXhX9Hs&index=29&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU 
+
 and the rest of Mike Marin's lectures, that are also a really great way to start learning R.
 Or try datacamp.com
 
-## Packages
+# Packages
 
 ## List of available CRAN packages 
 http://cran.r-project.org/web/packages/available_packages_by_date.html
 
-For this workshop we use `tidyverse` a lot
+For this workshop we mainly use the `{tidyverse}` 
+```{r, echo=FALSE}
+
+knitr::include_graphics(path = file.path(root,
+                                         "images",
+                                         "tidyverse_sticker.png"))
+```
 ```{r}
 # install.packages("tidyverse")
 library(tidyverse)
 ```
 
-## `tidyverse`
-The `tidyverse` (in itself an R-package) is actually a collection of packages!
-See: http://tidyr.tidyverse.org/ for more info
+## `{tidyverse}` {.build}
+See: http://tidyverse.tidyverse.org/ for more info
+The `{tidyverse}` package includes (among others):
 
-## Biological Packages
-For Biological application go to http://www.bioconductor.org
+ * Wrangling: `{dplyr}`, `{tidyr}` 
+ * Reading data: `{readr}`, `{readxl}`
+ * Functional prgramming: `{purrr}`
+ * Models: `{broom}`
+ * Strings and regular expressions: `{stringr}`
+ * Factors: `{forcats}`
+ * Time (series): `{lubridate}`
+
+For all full list type `tidyverse_packages()` in the console, try it now!
+
+## 'Biological' Packages
+For 'Biological' application go to http://www.bioconductor.org
 
 Installing Bioconductor packages is different from CRAN packages
 example: `{affy}` 
@@ -252,10 +281,15 @@ biocLite("affy")
 # browseVignettes("affy")
 ```
 
-## Vignettes
-Vignettes are long explanations and demos of a package. Commonly, a vignette contains examples and a workflow that shows how the package can be used and which (research) questions can be adressed with the functions and datasets in the package. It usually is a good place to start for examples. It also shows the so-called dependence of a package: it explains which other packages you would need and how the data should look to be able to work with the package the vignette belongs to. 
+## Vignettes {.build}
 
-## Getting Help for R functions and packages
+ * Vignettes are long explanations and demos of a package
+ * A vignette contains examples and a workflow that shows how the package can be used and which (research) questions can be adressed with the functions and datasets in the package
+ * It usually is a good place to start for examples
+ * It also shows the so-called dependencies of a package
+ * It explains which other packages you would need and how the data should look to be able to work with the package the vignette belongs to
+
+## Getting Help examples
 ```{r, eval=FALSE}
 #install.packages("dplyr")
 library(dplyr)
@@ -263,7 +297,7 @@ library(ggplot2)
 ?dplyr
 ?ggplot2
 ?mean
-?mean  # goes to the page with functions related with '.mean.'
+?mean  # goes to the page with functions related to '.mean.'
 apropos("mean") # search on more options of or alternatives for a certain function
 formals(dplyr::filter)
 ```
@@ -275,18 +309,16 @@ demo(graphics) # demonstration of R functions
 ```
 
 ## Functions; naming arguments
-```{r, error=FALSE, message=FALSE, warning=FALSE}
-# ?rnorm
-hist(rnorm(100))
+```{r, error=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 seed <- c(1:4)
-set.seed(seed)
+set.seed(seed = seed)
 q <- rnorm(n = 10000, mean = 20, sd = 2)
 hist(q)
 ```
 
 ## No naming
 ```{r, eval=FALSE}
-# set.seed(1234)
+set.seed(seed)
 qq <- rnorm(10000, 20, 2)
 all(q == qq)
 ```
@@ -295,7 +327,158 @@ __**Write code for humans AND computers, be explicit!**__
 
 # R (Data) objects
 
-## Vectors
+## Data Structures: Lists
+
+When using R for data analysis you will most likely work with data in a matrix, an array, a list or even more likely: a dataframe.
+
+A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represnet different variables.  
+
+The dataframe and the list are the most widely used datastructures when considering experimental data. 
+
+## Create a List
+```{r}
+lst <-list(first_names = c(male = "Fred", female = "Mary"), no.children = 3, child_ages=c(4,7,16),
+child_names = c("Suzy", "Marvin", "Jane"), address = c("Pandamonium Alley 114, Chaosville"),
+marital_status = TRUE)
+length(lst) # number of elements in the list
+lst
+```
+
+## Accessing items in a list
+```{r}
+lst[[1]] # 1st element of List
+lst[[3]][2] # second item of third element
+names(lst) # named elements in this list
+lst$child_names # pull "named" elements from a list using `$` operator
+```
+
+## `str()` gives you the structure of an object
+```{r}
+str(lst) # display structure of lst
+``` 
+The new RStudio Interface also enables interactive exploration of R-objects (demo)
+
+## Selecting single elements in a list
+To select a single element from a variable in a list
+```{r}
+lst$child_ages[3] 
+lst[[6]][2] # returns the value of the second element for your variable
+``` 
+
+## Looping over lists
+```{r}
+purrr::map(lst, is.na)
+```
+
+## The Dataframe
+The dataframe is the most widely used data structure 
+**Remember "Tidy data!"**   
+
+## Creating a data frame from individual vectors
+```{r}
+people_df <- data.frame(age = c(24, 27, 19, 34),      
+                        sex = c("F","F","M", "M"), 
+                        weight = c(64, 55, 80, 70),
+                        names = c("Christa", "Suzan", 
+                                  "Matt", "John"))
+head(people_df)
+``` 
+
+## Or the 'tidyverse' way
+```{r}
+people_tbl <- tibble::tibble(age = c(24, 27, 19, 34),      
+                             sex = c("F","F","M", "M"), 
+                             weight = c(64, 55, 80, 70),
+                             names = c("Christa", "Suzan", 
+                                       "Matt", "John"))
+people_tbl
+```
+
+## Viewing the contents of a dataframe
+```{r, eval=FALSE}
+summary(people_df)
+table(people_df)
+
+head(people_df) 			# gives the content of the data frame
+names(people_df) 
+str(people_df)
+
+people_df$age # gives the content of the variable "age" from the data frame
+
+``` 
+
+## Using index on dataframes
+Using the index "[]" on a dataframe is a bit tricky. The dataframe always consists of rows and columns. Indexing a dataframe goes like:
+
+`dataframe[row number(s), column number(s)]`
+
+```{r, eval=FALSE}
+people_df$age[1] 	# first element of this vector
+people_df[,2] 	  # content of 2nd variable (column) which is a character                      vector -> factor
+people_df[1,] 	  # content of the 1st row
+                  # multiple indices
+people_df[2:3, c(1,3)] # remember to use c
+
+```
+
+## Import data into R
+```{r}
+library(tidyverse)
+path_to_gender_age_data <- file.path(root, "data", "gender.txt")
+gender_age <- read_delim(path_to_gender_age_data,
+                         delim = "/")
+```
+
+## Inspecting the dataframe
+```{r}
+# getting the first few rows 
+head(gender_age)
+# getting information on the variable, the dimensions
+str(gender_age)
+# selecting a variable
+gender_age$gender
+gender_age$age
+gender_age[1:6,2]
+``` 
+
+## read_csv
+CSV is a format of a data file that uses commas or semicolons as separators for the columns.
+
+```{r}
+library(readr)
+skin <- read_csv(paste0(root, "/data/skincolumns.csv")) 
+skin %>% head(3)
+```
+
+## Inspecting the skin dataframe
+```{r, eval=FALSE}
+head(skin)	 # content of the data frame
+dim(skin)
+attributes(skin)
+summary(skin)
+## ?read_csv 	 # help on the function
+```
+
+## `skin` dataset contains an NA, some functions do not work with NAs:
+```{r}
+mean(skin$`Genotype A`)
+mean(skin$`Genotype B`)
+
+# to remove the NA, take care: consider leaving NAs in and use arguments like na.rm = TRUE
+skin_noNA <- na.omit(skin)
+mean(skin_noNA$`Genotype B`)
+``` 
+
+## Let's clean up the workspace
+```{r, eval = FALSE }
+rm(list=ls())
+root <- find_root_file(criterion = is_rstudio_project)
+## Note: never use this in code that is meant for others!!!
+```
+
+*_The above is an effective way to clear all the items in the Global Environment, but is is not very friendly to use this in code you share with others: can you think of why?_*
+
+## Vectors {.build}
 R is an object oriented language: meaning you can create and work with (manipulate/index/access) objects. Vectors are R's elementary objects and 
 come in different flavours:
 
@@ -423,45 +606,6 @@ x[3:5] # element 3 to 5
 x[x > 9] # all greater than some value
 ```
 
-## Plotting and filtering elements from a vector
-```{r}
-set.seed(1234)
-h <- rnorm(n = 1000, mean =  0, sd = 2)
-plot(h)
-h
-max(h)
-min(h)
-```
-
-## The plot
-```{r}
-
-hist(h[larger_than_0 <- h > 0 | h < -5], main = "title", xlab = "units",
-     ylab = "units")
-
-## this code is pretty unreadable, we will see a better way later in the workshop
-
-```
-
-## Creating a logical index and apply it to a plot
-```{r}
-ind <- h < 0
-h[ind] %>% plot()
-```
-
-## Histogram
-```{r}
-hist(h, breaks = 20)
-```
-
-## Truncate the distribution at -4 and 4
-```{r, fig.align='center', fig.height=4, fig.width=8}
-index <- h > -4 & h < 4
-par(mfrow = c(1,2))
-hist(h, breaks = 20)
-hist(h[index], breaks = 20)
-```
-
 ## Concatenate or `c()` command
 The `c()` function can be used to __concatenate__, __combine__ or __create__ objects in R 
 ```{r}
@@ -469,207 +613,6 @@ pp <- c(x, 0, x)
 length(pp) 
 sum(c(pp, c(1:5), c(1,2, c(1:10)))) # sum of elements in the 'concatenated' vector
 ```
-
-## Plotting models
-```{r} 
-c <- c(1:7,9,11) # dependent variable (response)
-d <- c(1:9) # independent variable (terms)
-```
-
-## Performing a linear correlation (response ~ terms)
-```{r}
-m1 <- lm(c ~ d)
-m1$coefficients
-```
-
-## Model summary
-```{r}
-summary(m1)
-```
-
-## Make a plot 
-```{r}
-plot(d, c, ylim=c(0,13))
-```
-
-## Plotting the model
-```{r}
-plot(d, c, ylim=c(0,13), abline(m1), 
-     main = "Regression Example",
-     xlab = "Terms", ylab = "Response")  #abline plots the correlation model in the graph
-```
-
-## ggplot2 version
-During the course we will mostly use the `ggplot2` plotting system!
-ggplot2 works with dataframes, so we first need to create one
-```{r} 
-tbl_df <- tibble(x = d, y = c)
-```
-
-## ggplot code
-```{r, results='hold'}
-ggplot(data = tbl_df, aes(x = x, y = y)) +
-  geom_point(colour = "darkred", size = 3) +
-  geom_smooth(method = "lm", se = TRUE, 
-              formula = y ~ x, colour = "darkblue") +
-  ggtitle("Regression Example") + xlab("Terms") + ylab("Response")
-```
-
-## Combine the two in one slide
-```{r, echo=FALSE, results='hold'}
-source(file.path(root, "code", "panel_ggplot2_base_combined.R"))
-```
-
-## Let's clean up the workspace
-```{r, eval = FALSE }
-rm(list=ls())
-root <- find_root_file(criterion = is_rstudio_project)
-## Note: never use this in code that is meant for others!!!
-```
-
-*_The above is an effective way to clear all the items in the Global Environment, but is is not very friendly to use this in code you share with others: can you think of why?_*
-
-## Data Structures: Lists
-
-When using R for data analysis you will most likely work with data in a matrix, an array, a list or even more likely: a dataframe.
-
-A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represnet different variables.  
-
-The dataframe and the list are the most widely used datastructures when considering experimental data. 
-
-## Create a List
-```{r}
-lst <-list(first_names = c(male = "Fred", female = "Mary"), no.children = 3, child_ages=c(4,7,16),
-child_names = c("Suzy", "Marvin", "Jane"), address = c("Pandamonium Alley 114, Chaosville"),
-marital_status = TRUE)
-length(lst) # number of elements in the list
-lst
-```
-
-## Accessing items in a list
-```{r}
-lst[[1]] # 1st element of List
-lst[[3]][2] # second item of third element
-names(lst) # named elements in this list
-lst$child_names # pull "named" elements from a list using `$` operator
-```
-
-## `str()` gives you the structure of an object
-```{r}
-str(lst) # display structure of lst
-``` 
-The new RStudio Interface also enables interactive exploration of R-objects (demo)
-
-## Selecting single elements in a list
-To select a single element from a variable in a list
-```{r}
-lst$child_ages[3] 
-lst[[6]][2] # returns the value of the second element for your variable
-``` 
-
-## Looping over lists
-```{r}
-purrr::map(lst, is.na)
-```
-
-## The Dataframe
-The dataframe is the most widely used data structure 
-**Remember "Tidy data!"**   
-
-## Creating a data frame from individual vectors
-```{r}
-people_df <- data.frame(age=c(24, 27, 19, 34),      
-                       sex=c("F","F","M", "M"), 
-                       weight=c(64, 55, 80, 70),
-                       names = c("Christa", "Suzan", 
-                                 "Matt", "John"))
-head(people_df)
-``` 
-
-## Or the 'tidyverse' way
-```{r}
-people_tbl <- tibble::tibble(age=c(24, 27, 19, 34),      
-                       sex=c("F","F","M", "M"), 
-                       weight=c(64, 55, 80, 70),
-                       names = c("Christa", "Suzan", 
-                                 "Matt", "John"))
-people_tbl
-```
-
-## Viewing the contents of a dataframe
-```{r, eval=FALSE}
-summary(people_df)
-table(people_df)
-
-head(people_df) 			# gives the content of the data frame
-names(people_df) 
-str(people_df)
-
-people_df$age # gives the content of the variable "age" from the data frame ""
-
-``` 
-
-## Using index on dataframes
-Using the index "[]" on a dataframe is a bit tricky. The dataframe always consists of rows and columns. Indexing a dataframe goes like:
-
-`dataframe[row number(s), column number(s)]`
-
-```{r, eval=FALSE}
-people_df$age[1] 	# first element of this vector
-people_df[,2] 	# content of 2nd variable (column) which is a character vector -> factor
-people_df[1,] 	# content of the 1st row
-# multiple indices
-people_df[2:3, c(1,3)] # remember to use c
-
-```
-
-## Import data into R
-```{r}
-library(tidyverse)
-path_to_gender_age_data <- file.path(root, "data", "gender.txt")
-gender_age <- read_delim(path_to_gender_age_data,
-                         delim = "/")
-```
-
-## Inspecting the dataframe
-```{r}
-# getting the first few rows 
-head(gender_age)
-# getting information on the variable, the dimensions
-str(gender_age)
-# selecting a variable
-gender_age$gender
-gender_age$age
-gender_age[1:6,2]
-``` 
-
-## read_csv
-CSV is a format of a data file that uses commas or semicolons as separators for the columns.
-
-```{r}
-library(readr)
-skin <- read_csv(paste0(root, "/data/skincolumns.csv")) 
-skin %>% head(3)
-```
-
-## Inspecting the skin dataframe
-```{r, eval=FALSE}
-head(skin)	 # content of the data frame
-dim(skin)
-attributes(skin)
-summary(skin)
-## ?read_csv 	 # help on the function
-```
-
-## `skin` dataset contains an NA, some functions do not work with NAs:
-```{r}
-mean(skin$`Genotype A`)
-mean(skin$`Genotype B`)
-
-# to remove the NA, take care: consider leaving NAs in and use arguments like na.rm = TRUE
-skin_noNA <- na.omit(skin)
-mean(skin_noNA$`Genotype B`)
-``` 
 
 ## Generate R-code from this Rmd
 ```{r, eval=FALSE}

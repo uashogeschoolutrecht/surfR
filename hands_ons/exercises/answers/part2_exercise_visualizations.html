@@ -9,9 +9,8 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Marc A.T. Teunis" />
+<meta name="author" content="Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin" />
 
-<meta name="date" content="2018-10-04" />
 
 <title>Exercise - Visualizations</title>
 
@@ -308,8 +307,9 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Exercise - Visualizations</h1>
-<h4 class="author"><em>Marc A.T. Teunis</em></h4>
-<h4 class="date"><em>2018-10-04</em></h4>
+<h3 class="subtitle"><em>SURF Research Bootcamp</em></h3>
+<h4 class="author"><em>Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin</em></h4>
+<h4 class="date"><em>November 2nd 2018</em></h4>
 
 </div>
 
@@ -331,12 +331,12 @@ library(readxl)
 </div>
 <div id="ggplot2" class="section level2">
 <h2><code>{ggplot2}</code></h2>
-<p>As shown in the lecture, the {ggplot2} package is a very strong tool to make plots. It is somewhat more difficult to master than other plotting systems in R, but it is much stronger and much, much more versatile.</p>
+<p>As shown in the demo, the {ggplot2} package is a very strong tool to make plots. It is somewhat more difficult to master than other plotting systems in R, but it is much stronger and much, much more versatile.</p>
 <p>In order to force you to study ggplot syntax, you will have to create plots in this exercise using {ggplot2} syntax only!!</p>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to oneanother or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the <code>geom_histogram()</code> or <code>geom_freypoly()</code> in {ggplot2}.</p>
+<p>In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to one another or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the <code>geom_histogram()</code> or <code>geom_freypoly()</code> in {ggplot2}. Alternatively you can use <code>geom_boxplot()</code> to create boxplots.</p>
 </div>
 <div id="exercise-1-treatment-effect-relations" class="section level2">
 <h2><strong>Exercise 1: Treatment Effect Relations</strong></h2>
@@ -352,7 +352,7 @@ library(readxl)
 <li>Are all the variables of the right type?</li>
 <li>Which variables are categorical?</li>
 <li>Which are numeric?</li>
-<li>Change grouping variables to facors if neccesary(<code>chicks$var &lt;- as_factor(chicks$var)</code>)</li>
+<li>Change grouping/categorical variables to facors if neccesary(<code>chicks$var &lt;- as_factor(chicks$var)</code>)</li>
 </ul>
 <p>1B) Change all variable names to lower type case</p>
 <p>Write a line of code that changes all <code>names()</code> of the variables to lower-case.</p>
