@@ -10,23 +10,29 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE,
                       error = FALSE,
                       message = FALSE,
                       warning = FALSE,
                       fig.width = 5, 
                       fig.height = 3)
+
 ```
 
 ```{r, define_root, include=FALSE}
+
 ## defines the root of the project for later use
 require("rprojroot") || utils::install.packages("rprojroot")
 library(rprojroot)
 root <- find_root_file(criterion = is_rstudio_project)
+
 ```
 
 ```{r, include=FALSE}
+
 library(tidyverse)
+
 ```
 
 ## Getting to know your neighbour
@@ -36,31 +42,51 @@ Spend 4 minutes explaining to your neighbour:
  - What brings you here? What are your expectations?
  - What characterizes you regarding R: `Beginner`, `Intermediate`, `Advanced`, `Superman`/`Superwoman`?
  - What type of data do you normally work with? 
- - What type of problems are you solving or planning to solve?
+ - What type of problems are you solving or planning to solve with R?
 
 ## **Wetting your appetite...**
 
-If you're a beginner: 
+If you're a(n) (absolute) beginner: 
 
-Take a deep breath, keep calm, and carry on...
+Take a deep breath..., 
 
-## **Discuss with your neighbour** {.smaller}
+keep calm..., 
 
-**What is wrong with the following R code?^1^**
+and carry on...
+
+## Creating a data table (`tibble`)
+```{r}
+
+data_example <- tibble(numbers = c(1:9, -999), 
+                 more_numbers = c(1:5, -999, -999, 8:10),
+                 some_letters = LETTERS[1:10])
+data_example
+
+```
+
+## Tibbles
+
+"Tibbles are data frames, but they tweak some older behaviours to make life a little easier. R is an old language, and some things that were useful 10 or 20 years ago now get in your way. It’s difficult to change base R without breaking existing code, so most innovation occurs in packages."
+
+From the book: "R for Data Science" by Garrett Grolemund & Hadley Wickham
+
+## **Discuss with your neighbour** 
+
+**What is 'wrong' with the following R code?^1^**
 
  * This code is supposed to replace the number `-999` for a missing value (`NA`)
  * Find at least 3 'mistakes'
  * What would you do to prevent this kind of mistakes?
 
 ```{r, eval=FALSE}
-df$var_a[df$var_a ==  999] <- NA
-df$var_b[df$var_b == -999] <- NA
-df$var_h[df$var_h == -999] <- NA
-df$var_i[df$var_j == -989] <- NA
-df$var_j[df$var_j == -999] <- NA
-df$var_o[df$var_n == -988] <- "NA"
-## there are at least 5 errors in this code
+
+data_example$numbers[data_example$numbers == 999] <- NA
+data_example$numbers[data_example$more_numbers == -999] <- NA
+data_example$numbers[data_example$some_letters == 999] <- NA
+data_example$more_numbers[data_example$more_numbers == 998] <- NA
+
 ```
+
 ^1^Example (adapted from): Hadley Wickham, *Expressing yourself using R* Lecture  - <https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4>
 
 ## Programming with functions
@@ -72,28 +98,28 @@ Solve the same problem over and over again (and waste a lot of time in finding t
 <center>**OR**</center>
 <br>
 Write small pieces of code (functions) that are generalizable for re-use in the future
- 
-## Creating a data frame
-```{r}
-df <- data.frame(a = c(1:9, -999), 
-             b = c(1:5, -999, -999, 8:10),
-             c = LETTERS[1:10])
-df
-```
 
-## A function that replaces 
-a designated number or string with `NA`
+## Let's write a function that 
+
+**replaces a designated number or string (na_string) in a vector (x) with a missing value (`NA`)**
 
 ```{r}
-replace_x_with_na <- function(x){
-  x[x == -999] <- NA
+
+replace_na_string_with_na <- function(x, na_string){
+  
+  x[x == na_string] <- NA
   return(x)
+
 }
+
 ```
 
-## Apply the function to a single column
+## Apply the function to a single column in our `data_example` tibble
 ```{r}
-replace_x_with_na(df$a)
+
+data_example$numbers
+replace_na_string_with_na(data_example$numbers, na_string = "-999")
+
 ```
 
 ## Take home message
@@ -102,82 +128,95 @@ replace_x_with_na(df$a)
  
  ...write re-usable pieces of code (functions)
 
-We hope this small example inspired you to write your own functions
+We hope this small example inspired you to write (more of) your own functions
 
 # Let's create some R objects
 ### Switch to RStudio RMarkdown document "part1_intro_to_rstudio_and_r.Rmd"
 
 ## _'numeric'_ vectors
 ```{r}
+
 numbers <- c(1.3, 3.6, 7.8)
 numbers
 sum(numbers)
+
 integer_vector <- c(1:5)
 integer_vector
+
 ```
 
 ## What happens to a 'mixed' vector?
 ```{r, mixed}
+
 vector <- c(1:3, NA, NA, NA,  3, "Python is great!", "R is greater!")
 vector
 is.na(vector) 
+
 ```
 
 ## Type of object
 ```{r}
+
 class(numbers)
-class(missing) ## what is the `class`?
 class(vector)
 class(integer_vector)
+
 ```
 
 ## Getting number of `NA`s
 ```{r}
-missing_num <- as.numeric(missing) ## turn logical into numeric  
-missing_num
-sum(missing_num) ## how many TRUEs
-sum(missing) ## implicitly turning  logical into numeric
+
+is.na(vector) ## how many TRUEs
 sum(is.na(vector)) ##  how many NAs
+
 ```
 
 ## Mathematical operations on a `character` vector
 ```{r, eval=FALSE}
+
 sum(vector) ## Warning sum on character
+
 ```
 
 ## Let's create some data 
 ```{r}
-set.seed(1234)
+
 normals <- rnorm(n = 100, mean = 5, sd = 1.3)
-normals <- as_tibble(normals)
+mean(normals)
 ## change number of observations to 10000 and rerun
+
 ```
 
 ## Plot histogram
 ```{r}
-ggplot(data = normals, aes(x = value)) +
+
+normals_tbl <- as_tibble(normals) 
+
+ggplot(data = normals_tbl, aes(x = value)) +
   geom_histogram(bins = 50)
 ## change the `bins` argument to see what happens
+## change the n = ... argument in the code above and rerun 
+
 ```
 
 ## **Discuss with your neighbour**
 
- * How would you turn the above plot into a function that takes two arguments: `bins` and `df`?
+ * How would you turn the above plot code into a function that takes two arguments: `bins` and `df`?
  * Try it out using the following skeleton:
- 
 ```{r, eval=FALSE}
-plot_histogram <- function(df, bins){
 
+plot_histogram <- function(df, bins){
  ## Write your code here, use the example above
- 
  fig <- df %>% ggplot(....)
  ....
  ....
  ....
 
  return(fig)
-
 }
+## test function
+plot_histogram(df = normals_tbl, bins = 40)
+
 ```
 
 ## R is case-sensitive!
@@ -187,23 +226,29 @@ plot_histogram <- function(df, bins){
 _R is case-sensitive, i.e. it will regard names with different cases as different names._
 
 ```{r, eval=FALSE}
+
 x <- 1
 print(x)
 print(X)
 X <- "this is a different X"
 print(x)
 print(X)
+
 ```
 
-_Keep this in mind if you get a cryptic warning or error!_
+_Keep this in mind if you get a warning or error on `'object '...' not found!`_
 
-## Programming (in R) can be frustrating {.build}
+## Programming (in R) can be frustrating
 
- * Writing (R) code can be challenging 
- * You will get mind-boggling errors. 
- * R is extremely picky about capitals and every opening `(`, `[` or `{` must be matched by a closing `)`, `]` or `}`. 
+ >- Writing (R) code can be challenging 
+ >- You will get mind-boggling errors
+ >- R is extremely picky about capitals
+ >- Every opening `(`, `[` or `{` must be matched by a closing `)`, `]` or `}` 
+
+## Decimals
 
 Mind that in R `.` is the decimal separator!
+
 ```
 # Example
 pi <- 3.14159
@@ -211,27 +256,25 @@ pi <- 3.14159
 # NOT pi: 3,14159
 ```
 
-## Getting help {.build}
+## Getting help
 
- * If you're stuck, try the help (`?` or `??` or `help()`) function. 
- * You can get help on any R function by running `?function_name` and `?package_name` 
- * or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
- * Other great tools are `Google` and `Stack Overflow`: google an error message. It's very likely that someone else encountered the same problem and published a solution.
+ >- If you're stuck, try the help (`?` or `??` or `help()`) function. 
+ >- You can get help on any R function by running `?function_name` and `?package_name` 
+ >- or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
+ >- Other great tools are `Google` and `Stack Overflow`: google an error message. It's very likely that someone else encountered the same problem and published a solution.
 
-## Getting Help examples
+## Getting help examples
 ```{r, eval=FALSE}
-#install.packages("dplyr")
-library(dplyr)
-library(ggplot2)
+
 ?dplyr
 ?ggplot2
 ?mean
-?mean  # goes to the page with functions related to '.mean.'
-apropos("mean") # search on more options of or alternatives for a certain function
-formals(dplyr::filter)
+
 ```
 
 ## For more on learning R, start e.g. with:
+
+https://r4ds.had.co.nz/ !!
 
 http://www.statsteachr.org/ or
 
@@ -242,6 +285,7 @@ https://www.youtube.com/watch?v=ACWuV16tdhY&index=21&list=PLqzoL9-eJTNBDdKgJgJza
 https://www.youtube.com/watch?v=kvmSAXhX9Hs&index=29&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU 
 
 and the rest of Mike Marin's lectures, that are also a really great ways to start learning R.
+
 Or try datacamp.com
 
 # Packages
@@ -255,14 +299,16 @@ For this workshop we mainly use the `{tidyverse}`
 knitr::include_graphics(path = file.path(root,
                                          "images",
                                          "tidyverse_sticker.png"))
+
 ```
 ```{r}
-# install.packages("tidyverse")
+
 # install.packages("stringr")
 library(tidyverse)
+
 ```
 
-## `{tidyverse}` {.build}
+## `{tidyverse}`
 See: http://tidyverse.tidyverse.org/ for more info
 The `{tidyverse}` package includes (among others):
 
@@ -295,76 +341,110 @@ __**Write code for humans AND computers, be explicit!**__
 ## Concatenate or `c()` command
 The `c()` function can be used to __concatenate__, __combine__ or __create__ objects in R 
 ```{r}
+x <- c(1, 2, 3, 4, 5)
 pp <- c(x, 0, x)
 length(pp) 
-sum(c(pp, c(1:5), c(1,2, c(1:10)))) # sum of elements in the 'concatenated' vector
+sum(pp) # sum of elements in the 'concatenated' vector (2 x 15)
 ```
 
-## Data Structures: Lists
+## Data Structures: Lists {.build}
 
 When using R for data analysis you will most likely work with data in a matrix, an array, a list or even more likely: a dataframe.
 
-A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represent different variables.  
+ >- A matrix is a table with only one value type (usually numbers) 
+ >- An array consists of multiple matices
+ >- A list is collection of R objects of different data type and can be of different length 
+ >- A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represent different variables. All variables have equal lenght  
 
-The dataframe and the list are the most widely used data structures for experimental data. 
+_The dataframe and the list are the most widely used data structures for experimental data._ 
 
 ## Create a List
 ```{r}
-lst <-list(first_names = c(male = "Fred", female = "Mary"), no.children = 3, child_ages=c(4,7,16),
-child_names = c("Suzy", "Marvin", "Jane"), address = c("Pandamonium Alley 114, Chaosville"),
-marital_status = TRUE)
+
+lst <-list(first_names = c(male = "Fred", 
+                           female = "Mary"), 
+           no.children = 3, 
+           child_ages=c(4,7,16),
+           child_names = c("Suzy", "Marvin", "Jane"), 
+           address = c("Pandamonium Alley 114, Chaosville"),
+           marital_status = TRUE)
+
 length(lst) # number of elements in the list
-lst
+names(lst)
+
+```
+
+
+## Printing the contents of the list
+```{r}
+
+lst # we can explore the contents interactively in RStudio interface
+
 ```
 
 ## Accessing items in a list
 ```{r}
+
 lst[[1]] # 1st element of List
 lst[[3]][2] # second item of third element
 names(lst) # named elements in this list
-lst$child_names # pull "named" elements from a list using `$` operator
+
 ```
 
-## `str()` gives you the structure of an object
+## Using `$` on named elements in a list
 ```{r}
-str(lst) # display structure of lst
+
+lst$child_names 
+
+```
+
+## `glimpse()` gives you the structure of an object
+```{r}
+
+glimpse(lst) # display structure of lst
+
 ``` 
 The new RStudio Interface also enables interactive exploration of R-objects (demo)
 
 ## Selecting single elements in a list
 To select a single element from a variable in a list
 ```{r}
+
 lst$child_ages[3] 
-lst[[6]][2] # returns the value of the second element for your variable
+lst[[5]][1] # returns the value of the first item of the 5th element 
+
 ``` 
 
 ## The data frame
 The data frame is the most widely used data structure 
 
-**Remember "Tidy data!"**   
-
 ## Creating a data frame from individual vectors
 ```{r}
+
 people_df <- data.frame(age = c(24, 27, 19, 34),      
                         sex = c("F","F","M", "M"), 
                         weight = c(64, 55, 80, 70),
                         names = c("Christa", "Suzan", 
                                   "Matt", "John"))
 head(people_df)
+
 ``` 
 
 ## Or the 'tidyverse' way
 ```{r}
+
 people_tbl <- tibble(age = c(24, 27, 19, 34),      
                      sex = c("F","F","M", "M"), 
                      weight = c(64, 55, 80, 70),
                      names = c("Christa", "Suzan", 
-                                       "Matt", "John"))
+                               "Matt", "John"))
 people_tbl
+
 ```
 
 ## Viewing the contents of a data frame
 ```{r, eval=FALSE}
+
 summary(people_df)
 table(people_df)
 
@@ -382,6 +462,7 @@ Using the index "[]" on a dataframe is a bit tricky. The dataframe always consis
 `dataframe[row number(s), column number(s)]`
 
 ```{r, eval=FALSE}
+
 people_df$age[1] 	# first element of this vector
 people_df[ , 2] 	  # content of 2nd variable (column) which is a character                      vector -> factor
 people_df[1 , ] 	  # content of the 1st row
@@ -392,50 +473,36 @@ people_df[2:3, c(1,3)] # remember to use c()
 
 ## Import data into R
 ```{r}
+
 library(tidyverse)
 path_to_gender_age_data <- file.path(root, "data", "gender.txt")
 gender_age <- read_delim(path_to_gender_age_data,
                          delim = "/")
-```
 
-## Inspecting the dataframe
-```{r}
-# getting the first few rows 
-head(gender_age)
-# getting information on the variable, the dimensions
-str(gender_age)
-# selecting a variable
-gender_age$gender
-gender_age$age
-gender_age[1:6,2]
-``` 
+```
 
 ## read_csv
 CSV is a format of a data file that uses commas or semicolons as separators for the columns.
 
 ```{r}
+
 library(readr)
 file_location <- file.path(root, "data", "skincolumns.csv" )
 skin <- read_csv(file_location) 
 head(skin, 3)
-```
 
-## Inspecting the skin dataframe
-```{r, eval=FALSE}
-head(skin)	 # content of the data frame
-dim(skin)
-summary(skin)
-## ?read_csv 	 # help on the function
 ```
 
 ## `skin` dataset contains an NA, some functions do not work with NAs:
 ```{r}
 mean(skin$`Genotype A`)
 mean(skin$`Genotype B`)
-mean(skin_noNA$`Genotype B`, na.rm = TRUE)
+mean(skin$`Genotype B`, na.rm = TRUE)
 ``` 
 
-## Demo brush "Clean the ENV."
+# Optional
+
+Or move on to part 2
 
 ## Manipulating vectors
 You can add/subtract/devide or use other arithmetic functions on numeric vectors
@@ -443,21 +510,15 @@ You can add/subtract/devide or use other arithmetic functions on numeric vectors
 a <- c(1,2,4,6)
 b <- c(2,4,6,8)
 
-z1 <- a + b
-z1
-
-z2 <- b - a
-z2
-z3 <- a / b
-z3
+a + b
+b - a
+a / b
 ```
 
 ## Apply functions to a vector 
 ```{r}
-z4 <- sum(a)
-z4
-z5 <- max(a) - max(b)
-z5
+sum(a)
+max(a) - max(b)
 ```   
 
 ## Indexing with [...]
@@ -466,15 +527,14 @@ You can get the individual items of a vector by using the index `[]`
 x <- c(8, 5, 10, 13, 2, 7, 15, 3, 20, 8)
 x # create vector with 10 variables
 length(x)
-mode(x) # information on data mode (numeric, character, logic)
-
 ```
 
 ## Using the index
 ```{r}
-x
 x[3] ## creating a subset by indexing:
 x[c(3, 4, 7)] # apply a simple function
-
 mean(x[c(2,5)]) # example of a function
 ```
+
+## Demo brush "`Clean the  Global Environment`"
+
