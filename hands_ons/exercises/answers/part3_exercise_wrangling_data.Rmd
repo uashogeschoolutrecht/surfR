@@ -28,7 +28,7 @@ __Write an Rmd file, containing code chunks (if applicable) and answer all the q
 ## The dplyr package is great for manipulating data
 
  * Select variables (columns)
- * Filter observaions (rows)
+ * Filter observations (rows)
  * Change the order of rowns and columns 
  * Add new variables 
  * Group data / slice or "roll-up" data
@@ -55,6 +55,7 @@ It was downloaded from:
 https://github.com/rstudio/webinars/tree/master/15-RStudio-essentials/4-Projects
 
 Load the data with the following code
+
 ```{r, echo=TRUE}
 library(tidyverse)
 heights_file <- file.path(root, "data", "heights.RDS")
@@ -70,17 +71,18 @@ heights_tib <- as_tibble(heights)
 1A) Inspect the data with the `head()` and `tail()` function.
 The datset contains `r nrow(heights)` observations.   
 
- - What types of variables are present in the data.
+ - What types of variables are present in the data?
  - Focus on the variables `id` `income`, `height`, `weight`, `sex` and `race`
  
-1B) Call `summary` on the data. What do you notice when you look at the max. and min. value for the `height`. For nicer printing you can use `pander::pander()`
+1B) Call `summary` on the data. What do you notice when you look at the max. and min. value for the `height`? For nicer printing you can use `pander::pander()`
 
 ```{r}
 library(pander)
 pander(summary(heights))
 ```
 
-1C) Are there any missing values in the data? Determine the number of missing values
+1C) Are there any missing values in the data? Determine the number of missing values.
+
 ```{r}
 sum(is.na(heights))
 ```
@@ -105,13 +107,14 @@ heights_selected <- heights %>%
 ```
 
 2B) Check the amount of NAs that you have left in the dataset
+
 ```{r, answer_2b}
 sum(is.na(heights_selected))
 ```
 
 2C) To complete the data-inspection and do a bit of cleaning we can look at the records in the `heigths_selected` dataset that are complete. This means, for which we have data points for all 5 variables.
 
-use the function `complete.cases()` from the {stats} package. Look at `?complete.cases()` to see how to use this function. Create a new data frame with complete case that you call `heights_complete`
+Use the function `complete.cases()` from the {stats} package. Look at `?complete.cases()` to see how to use this function. Create a new data frame with complete case that you call `heights_complete`
 
  - Remember that you can use data.frame[rows, columns] to subset a dataframe with a logical vector
  
@@ -119,13 +122,10 @@ use the function `complete.cases()` from the {stats} package. Look at `?complete
 library(stats)
 complete_cases <- complete.cases(heights_selected) 
 heights_complete <- heights_selected[complete_cases,] 
-
-## or
-
-
 ```
 
 2D) How many NAs are present in the `heights_complete` dataset that you just created under 2C? What did you expect?
+
 ```{r}
 sum(is.na(heights_complete))
 ```
@@ -135,6 +135,7 @@ sum(is.na(heights_complete))
  - For the next assignment you can use the `filter()` command from {dplyr}
 
 3A) Filter all people that have a weight of over 200 lbs.
+
 ```{r}
 heights_complete <- as.tibble(heights_complete)
 
@@ -146,7 +147,7 @@ over_200 <- filter(heights_complete, weight > 200) %>%
 
 ```
 
-3B) What is the most frequent ethnicity in the group of people that have a weight over 200 lbs   
+3B) What is the most frequent ethnicity in the group of people that have a weight over 200 lbs?   
 
  - Think about how you can answer this question: you want to have some sort of tabular summary! Discuss with your neighbour. And/or look on the internet. 
 ```{r}
@@ -188,14 +189,13 @@ five_tallest_hispanic_men <- tallest_hispanic_men[c(1:5), ]
 # all weights: 
 five_tallest_hispanic_men$height
 
-
 # mean height
-
 mean <- mean(five_tallest_hispanic_men$height)
 mean
 ```
 
 3D) Find the two tallest women in the data. See if you can find two men that match the weight and heigt of these women.
+
 ```{r}
 rank_women <- heights_complete %>%
   filter(sex == "female") %>%
@@ -219,6 +219,7 @@ match_2
 ```
 
 ## Creating new variables
+
 The units of the data in the `heights` dataset is somewhat difficult to interpret because of the use of non-SI notation (so basically non-scientific units). The weights are in `lbs` or also called pounds and the height is in `inches`.
 
  * 1 inch = 2.54 cm
@@ -246,6 +247,7 @@ head(heights_complete)
 ```
 
 ## Body-mass index
+
 The body-mass index or BMI can be calculated from the weight and the height of a person. 
  
  The formula for determining the BMI is
@@ -256,7 +258,8 @@ The body-mass index or BMI can be calculated from the weight and the height of a
  
 #### $BMI=\frac{bodyweight(kg)}{height(meters)^2}$
  
-4C) Calculate a new variale called `bmi` for the `heights_complete` dataset 
+4C) Calculate a new variable called `bmi` for the `heights_complete` dataset
+
 ```{r}
 heights_complete <- heights_complete %>%
   mutate(bmi = (weight_kg / height_m^2))
@@ -286,9 +289,6 @@ heights_summary[1, "race"]
 head(heights_summary)
 
 ```
-
-
-
 
 When we have multiple observations per unit or groups of units, it makes sense to be able to group the data accordingly.
 
@@ -334,8 +334,6 @@ heights_summary <- heights_complete %>%
 ```
 
 5C) Is there a difference between males and females. For which race is this difference the biggest?
-
-
 
 ```{r}
 males <- heights_summary %>%
