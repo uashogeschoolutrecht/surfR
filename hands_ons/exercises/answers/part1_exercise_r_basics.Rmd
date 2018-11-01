@@ -261,7 +261,7 @@ mydata <- tibble(nr, prime, name, valid)
 
 7B) Fix the error you found and create the dataframe. Also try giving the columns different names. (Hint: see the function `names()` and the function `tibble()`.
 ```{r}
-# Not all vectors are of equal length; addingan addiotnal element
+# Not all vectors are of equal length; adding an additional element
 
 name <- c("abc1", "foo2", "bar3", "app5", NA)
 
