@@ -3,9 +3,11 @@ title: "Analytics Using R - Contents"
 author: "Marc A.T. Teunis"
 date: "November 2nd 2018"
 output:
-  ioslides_presentation: 
+  ioslides_presentation:
     highlight: pygments
     widescreen: yes
+  slidy_presentation:
+    highlight: pygments
 ---
 
 ```{r setup, include=FALSE}
@@ -66,7 +68,7 @@ The datasets can be found in your projectfolder after getting the workshop mater
 # Credits
 
 Much of this material has been derived in one way or the other from the work of 
-Hadley Wickham and Garret Grolemund and many others. For a more elborate reference list see the resources.html file in the project root.
+Hadley Wickham and Garret Grolemund and many others. For a more elaborate reference list see the resources.html file in the project root.
 
 Thanks to Hadley & Garret for writing the book "R for Data Science" http://r4ds.had.co.nz/ and for their work in general to innovate the R world.
 
@@ -74,7 +76,7 @@ Work on integration of Git/Github with R/RStudio is thouroughly and witfully doc
 
 https://github.com/jennybc/happy-git-with-r & http://stat545.com/block007_first-use-rmarkdown.html 
 
-## Disclaimer & Licence
+## Disclaimer & License
 
 The work in this presentation has been adapted from many sources as mentioned in slide 'Credits'. For a full reference list see the 'resources.html' document in the github repo 
 https://www.github.com/uashogeschoolutrecht/surfR
