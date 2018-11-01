@@ -44,7 +44,7 @@ As shown in the demo, the {ggplot2} package is a very strong tool to make plots.
 In order to force you to study ggplot syntax, you will have to create plots in this exercise using {ggplot2} syntax only!!
 
 ## Introduction
-In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to one another or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the `geom_histogram()` or `geom_freypoly()` in {ggplot2}. Alternatively you can use `geom_boxplot()` to create boxplots. 
+In most cases, plotting is the main tool by which you get a ‘feel’ for the data. In many cases, the plots require some work on the data first, so we will have to process the data as well. A very important part of your preliminary analysis involves knowing the distribution of the data. That is, what are its typical values, and how do they relate to one another or to another data set. Probably the easiest plotting tool for this is the histogram. This is available as the `geom_histogram()` or `geom_freqpoly()` in {ggplot2}. Alternatively you can use `geom_boxplot()` to create boxplots. 
 
 ## **Exercise 1: Treatment Effect Relations**
 In this exercise we will use a build-in dataset from the {datasets} package. The data can be loaded by typing 
@@ -53,9 +53,9 @@ chicks <- datasets::ChickWeight
 ```
 in your script. Try it now!
 
-You will see a new object called chicks in you Global Environment.
+You will see a new object called chicks in your Global Environment.
 ```{r}
-## load dataset ChickWeights
+## load dataset ChickWeight
 chicks <- datasets::ChickWeight 
 ```
 
@@ -67,7 +67,7 @@ chicks <- datasets::ChickWeight
  - Are all the variables of the right type?
  - Which variables are categorical?
  - Which are numeric?
- - Change grouping/categorical variables to facors if neccesary(`chicks$var <- as_factor(chicks$var)`)
+ - Change grouping/categorical variables to factors if necessary(`chicks$var <- as_factor(chicks$var)`)
  
 ```{r}
 head(chicks)
@@ -89,6 +89,7 @@ head(chicks)
 Create a plot in your Rmd script that shows all the data points. Plot the variable `time` on the x-axis and the variable `weight` on the y-axis.
 
 **ANSWER**
+
 ```{r}
 names(chicks)
 plot_1c <-  ggplot(data = chicks, aes(x = time, y = weight)) +
@@ -111,6 +112,7 @@ You will see that the plot contains many points that are overlaid. How can you s
  (look at `?geom_jitter`)
 
 **ANSWER**
+
 ```{r}
 plot_1d_1 <-  ggplot(data = chicks, 
                    aes(x = time, y = weight)) +
@@ -141,6 +143,7 @@ Add, `colour = diet` to the plot in such a way that you can see the diffences be
 __Can you determine from this plot which diet has the strongest effect on the weight-gain per time on the chicks?__
 
 **ANSWER**
+
 ```{r}
 plot_1e <-  ggplot(data = chicks,
                    aes(x = time, y = weight, color = diet)) +
@@ -151,14 +154,16 @@ plot_1e
 
 1F) Combining "jitter" with group colours
 
-Combining "jitter" with colours to reduce overplotting even more 
+Combining "jitter" with colours to reduce overplotting even more.
 
-Combine adding "jitter" to the plot with asigning colours to diet.
+Combine adding "jitter" to the plot with assigning colours to diet.
 
 **TIPs** 
+
  - Remember to `set.seed(1234)` to get a reproducible result.
 
 **ANSWER**
+
 ```{r}
 set.seed(1234)
 plot_1f <-  ggplot(data = chicks,
@@ -187,6 +192,7 @@ __Draw a conclusion: Which diet do you think shows the strongest effect on weigh
  - For this to work you will have to specify all the `aes()` arguments within the `ggplot()` call.
  
 **ANSWER** 
+
 ```{r}
 # summarize the chicks data with {dyplyr}
 chicks_summary <- chicks %>%
@@ -208,7 +214,9 @@ plot(chicks$time ~ chicks$chick) # base plotting R
 ```
 
 ## Statistics
-Some thoughts on statitical analysis 
+
+Some thoughts on statistical analysis 
+
 ```{r}
 
 aov2 <- aov(chicks$weight ~ chicks$diet)
@@ -220,18 +228,18 @@ tukey
 ```
 
 
-# EXERCISE 2; Excel files - load and visualize
-## Loading Microsoft Office Excel files. 
 
- 3A) Loading an Excel file
+## **Exercise 2: Excel files - load and visualize**
+
+2A) Loading an Excel file
  
-In the `"./data"` folder of your project you wille find several example datafiles that we are going to work on during the exercises.
+In the `"./data"` folder of your project you will find several example datafiles that we are going to work on during the exercises.
 
 The first set we are going to work on is a rather simple example
 
 "./data/Animals.xls". 
 
-It is an Miscrosoft Excel file containing brain and body weight of a number of animals: http://mste.illinois.edu/malcz/DATA/BIOLOGY/Animals.html 
+It is a Microsoft Excel file containing brain and body weight of a number of animals: http://mste.illinois.edu/malcz/DATA/BIOLOGY/Animals.html 
 
 DESCRIPTION:
 Average brain and body weights for 27 species of land animals.
@@ -262,7 +270,7 @@ You may use any function you like, but you are not allowed to transform the data
  - The variables in this dataset need to be `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER! These are the so-called `names` of the dataframe and can be set or checked using the function `names()`
  - Remember `dplyr::select`, `dplyr::filter()`, `dplyr::group_by`, `dplyr::summarize()`
  
-**ANSWER:**
+**ANSWER**
 
 ```{r}
 # tidyverse solution
@@ -301,10 +309,11 @@ skip = 1)
 
 ```
 
- 3B) Variable names.
+2B) Variable names
+
 The `names` of a dataframe can be found or set with `names(dataframe)`. Try setting the names for the `animal` dataframe to `animal`, `body_weigth` and `brain_weigth` and IN THAT ORDER. 
 
-**ANSWER:**
+**ANSWER**
 
 ```{r}
 names(animals_readxl) <- c("animal", "body_weight", "brain_weight")
@@ -315,13 +324,14 @@ colnames(animals_readxl) <- c("animal", "body_weight", "brain_weight")
 pander::pander(head(animals_readxl))
 ```
 
- 3C) Subsetting.
+2C) Subsetting
+
 The `animals` data can be subsetted and explored by using the subsetting functions from `dplyr`.
 
   - Which animal has a body weight of 6654.000 kg and a brain weight of 5712.0 g?
   - Write a few lines of code that extract this information from the dataframe.
 
-**ANSWER:** 
+**ANSWER** 
 
 ```{r}
 library(dplyr)
@@ -333,15 +343,19 @@ animals_readxl %>% filter(body_weight == 6654 & brain_weight == 5712)
 #animals_readxl[ind, ]
 ```
 
- 3D) Filtering.
+2D) Filtering
+
 Which animal has the smallest brain weight? 
 Write code that confirms this finding  
  
- **TIPs**
+**TIPs**
  
  - Use `dplyr::filter()` and `%>%` to find the answer.
  - You can also use `min(vector, na.rm = TRUE)` to find the answer. 
  - Try to write a few lines of code that answer this question with the correct output in the `Console` 
+
+**ANSWER**
+
 ```{r}
 ## dplyr solution
 head(animals_readxl %>% arrange(brain_weight), 1)
@@ -353,8 +367,9 @@ animals_readxl %>%
 
 ```
 
- 3E) Plots; 
-Create a plot that shows the realtionship between `body_weigth` and `brain_weight`. Create a dot plot, that shows this relationship.
+2E) Plots
+
+Create a plot that shows the relationship between `body_weight` and `brain_weight`. Create a dot plot, that shows this relationship.
 
 **TIPs**
  
@@ -363,7 +378,8 @@ Create a plot that shows the realtionship between `body_weigth` and `brain_weigh
  - Remember `geom_smooth()`
  - Remember using `%>%` in conjunction with `ggplot()` and the `dplyr` verbs
  
-#### ANSWER:
+**ANSWER** 
+
 ```{r}
 library(ggplot2)
 plot <- animals_readxl %>% 
@@ -374,10 +390,12 @@ plot
 ```
 
 
- 3F) Removing oulier. 
-On the basis of the plot above, construct a new plot that eliminates the data point for the animal "Brachiosaurus". What can you conclude from the relationship between body weigth and brain weigth, from this new plot? 
+2F) Removing outlier
 
-**ANSWER:** 
+On the basis of the plot above, construct a new plot that eliminates the data point for the animal "Brachiosaurus". What can you conclude from the relationship between body weight and brain weight, from this new plot? 
+
+**ANSWER** 
+
 ```{r}
 no_brachio <- animals_readxl %>% filter(!animal == "Brachiosaurus") %>%
   ggplot(aes(x = body_weight, y = brain_weight)) +
@@ -386,11 +404,15 @@ no_brachio <- animals_readxl %>% filter(!animal == "Brachiosaurus") %>%
 no_brachio
 ```
 
- From the plot, what can you conclude about the relationship. Are there any outliers?
+From the plot, what can you conclude about the relationship? Are there any outliers?
 
- 3G) Data Transformation.
+2G) Data Transformation
+
 Plot the relationship of the full dataset (including "Brachiosaurus"), between body weight and brain weight.
 Transform the body_weight variable to a log10 scale
+
+**ANSWER**
+
 ```{r}
 library(ggplot2)
 plot <- animals_readxl %>% 
@@ -404,11 +426,12 @@ plot <- animals_readxl %>%
 plot
 ```
 
- 3H) What can you conclude from the 3G plot? 
-What happens to the relation between body_weigt and brain_weight if you excluse all dinosaurs ("Brachiosaurus", "Diplodocus" and "Triceratops") from the dataset?
-**Write a short conclusion on this plot.**
+2H) What can you conclude from the 3G plot? What happens to the relation between body_weight and brain_weight if you exclude all dinosaurs ("Brachiosaurus", "Diplodocus" and "Triceratops") from the dataset?
 
-**ANSWER:**
+**Write a short conclusion on this plot**
+
+**ANSWER**
+
 ```{r}
 library(ggplot2)
 no_dinos <- animals_readxl %>%
@@ -426,10 +449,11 @@ no_dinos
 ```
 
 
-# **BONUS EXERCISE 3**
 
-## Exercise 3; Relational Genomics Data
-Exercise 3 is a more difficult and challenging exercise. It uses data in a form that is often used in the Lif Sciences: A Matrix with nummeric values. The file contains many variables, that are all deletions of certain genes. The rownames are the gene names for the gene in which the deletion was performed.
+
+## **Bonus Exercise 3: Relational Genomics Data**
+
+Exercise 3 is a more difficult and challenging exercise. It uses data in a form that is often used in the Life Sciences: A Matrix with numeric values. The file contains many variables, that are all deletions of certain genes. The rownames are the gene names for the gene in which the deletion was performed.
 
 The datafile can be found in : "//root/data/exp_profiles_gstf.M.txt"
 
@@ -440,7 +464,8 @@ In two seperate files meta-data is stored that provides extra information:
 "//root/data/SGD_features.features" 
 
 ## Data load
-The code below loads the data, copy it to your Rmd for this exercise.
+
+The code below loads the data. Copy it to your Rmd for this exercise.
 Load the data from exp_profiles_gstf_cf.M.txt (This file contains the M values, or log2 fold-change gene expression changes caused by removing (deleting) a particular gene).
 
 ```{r, load_data, echo =  TRUE}
@@ -460,9 +485,10 @@ Create a histogram for the variable `$msn2_del`. Play with the number of bins. S
 
  - Remember to set the `aes(msn2_del)` argument.
  - Play with the argument `bins = `
- - Use `ggtitle()`, `xlab()` and `ylab()` to create labels of the axes and the plot title
+ - Use `ggtitle()`, `xlab()` and `ylab()` to create labels of the axes and the plot title.
  
-**ANSWER 3A**
+**ANSWER**
+
 ```{r, histograms_3A}
 ggplot(data = expression_gstf, aes(msn2_del)) +
   geom_histogram(bins = 100) + ylab("Count") +
@@ -470,13 +496,15 @@ ggplot(data = expression_gstf, aes(msn2_del)) +
 ```
 
 3B) Two distributions in one plot
-Plot, in the same graph the distribution data for the phd1_del (use a different color. TIP: remember the difference between putting the mappings for aes in the ggplot() call and the geom_ call?).
+
+Plot in the same graph the distribution data for the phd1_del (use a different color. TIP: remember the difference between putting the mappings for aes in the ggplot() call and the geom_ call?).
 
 Create two plots for 3B: one using `geom_histogram()` and one using `geom_freqpoly()`. Put the two plots in one panel. Plot a different color for each variable in your two plots.
 
-Label the plot apropriately.
+Label the plot appropriately.
 
 **TIPs**
+
  - To plot two geoms in one graph for two different variables, with two different colors: put the `aes()` call inside the call to the `geom_`, like below.
 
 ``` 
@@ -487,7 +515,8 @@ Label the plot apropriately.
  - To plot multiple plots in a panel look at the package {cowplot}   
 ```
 
-**ANSWER 3B**  
+**ANSWER**  
+
 ```{r}
 ## freqpoly
 freqpoly <- ggplot(data = expression_gstf) +
@@ -517,9 +546,11 @@ cowplot::plot_grid(freqpoly, histograms)
 ```
 
 ## Transforming the data before plotting
+
 If we want to plot multiple variables in one plot it is more convenient to change the dataset to a different format.
 
 The code (we will learn how to do this later) for transforming the data to a stacked format is:
+
 ```{r, echo = TRUE}
 # ?gather
 # add extra column with gene names
@@ -531,12 +562,14 @@ expression_gstf_stacked <- expression_gstf %>%
 head(expression_gstf_stacked)
 ```
 
-The data is now in stacked format where we have counts for each variable in one colomn. The stacked format is more suitable to be able to plot groups of data.
+The data is now in stacked format where we have counts for each variable in one column. The stacked format is more suitable to be able to plot groups of data.
 
 ## New histograms with the "stacked" dataset
 
 3C) Create a set of frequency polynoms (`geom_freqpoly()`) that display the distibution of three deletions in the data: "ms2_del", "nhp6b_del" and "fkh1_del"
+
 Use the new dataset "expression_gstf_selected" created by the code below to create the plot
+
 ```{r, echo=TRUE, results='markup'}
 str(expression_gstf_stacked)
 ## convert grouping variables to factors
@@ -551,7 +584,8 @@ expression_gstf_selected <- expression_gstf_stacked %>%
 head(expression_gstf_selected)
 ```
 
-**ANSWER 3C**
+**ANSWER**
+
 ```{r}
 freqpoly_new <- ggplot(data = expression_gstf_selected) +
   geom_freqpoly(aes(x = log2, color = deletions), 
@@ -568,7 +602,7 @@ Use the dataset `expression_gstf` to answer 3D
 
 **TIPs**
 
- - Try to solve overplotting issues with settign alpha for transparency of the points 
+ - Try to solve overplotting issues with setting alpha for transparency of the points 
 
 ```{r}
 
