@@ -31,7 +31,6 @@ library(tidyverse)
 ```
 
 ## Setting the project root
-We need to an object for the root of the project for purposes yet to explain.
 ```{r, echo=TRUE, eval=TRUE, results='markup'}
 if (!require("rprojroot")) install.packages("rprojroot")
 library("rprojroot")
