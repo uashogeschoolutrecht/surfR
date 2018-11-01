@@ -1,8 +1,8 @@
 ---
-title: "Hands-on Part 1 - Intro to RStudio and R"
-subtitle: "SURFSara Research Bootcamp"
-author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
-date: "November 2nd 2018"
+title: "Hands-on Part 1 - Introduction to R and RStudio"
+subtitle: "SURF Research Bootcamp"
+author: "Marc A.T. Teunis, Jan-Willem Lankhaar, Jonathan de Bruin"
+date: "November 2nd, 2018"
 output:
   ioslides_presentation: 
     highlight: pygments
@@ -31,20 +31,25 @@ library(tidyverse)
 
 ## Getting to know your neighbour
 
-Spent 4 minutes explaining to your neighbour:
+Spend 4 minutes explaining to your neighbour:
 
  - What brings you here? What are your expectations?
- - What characterizes you regarding `R`:
- `Beginner`, `Intermediate`, `Advanced`, `Super Man`?
- - With what type of data do you normally work? 
- - What type of problems are you solving, or planning to solve?
+ - What characterizes you regarding R: `Beginner`, `Intermediate`, `Advanced`, `Superman`/`Superwoman`?
+ - What type of data do you normally work with? 
+ - What type of problems are you solving or planning to solve?
 
-## **Discuss with your neighbour:** {.smaller}
+## **Wetting your appetite...**
 
-**What is wrong with this R code?**
+If you're a beginner: 
 
- * Determine  what this code is meant to do
- * Find at leat 3 mistakes
+Take a deep breath, keep calm, and carry on...
+
+## **Discuss with your neighbour** {.smaller}
+
+**What is wrong with the following R code?^1^**
+
+ * Determine what the code is supposed to do
+ * Find at least 3 mistakes
  * What would you do to prevent these kind of mistakes?
 
 ```{r, eval=FALSE}
@@ -56,14 +61,17 @@ df$var_j[df$var_j == -999] <- NA
 df$var_o[df$var_n == -988] <- "NA"
 ## there are at least 5 errors in this code
 ```
-Reference: Example (adapted from): Hadley Wickham, "Expressing yourself_ with R" Lecture  - https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4
+^1^Example (adapted from): Hadley Wickham, *Expressing yourself using R* Lecture  - <https://richmedia.lse.ac.uk/methodologyinstitute/20170814_ExpressYourselfUsingR.mp4>
 
 ## Functional programming
 
 When working with R you can:
 
- - Solve each problem seperately (and spend a lot of time debugging and copying pasting)
- - Write small pieces of code (`functions`) that are generalisible to future problems
+Solve the same problem over and over again (and waste a lot of time in finding the errors)
+<br>
+<center>**OR**</center>
+<br>
+Write small pieces of code (functions) that are generalizable for re-use in the future
  
 ## Writing functions
 ```{r}
@@ -74,23 +82,21 @@ df
 ```
 
 ## Writing a function that replaces 
-`a designated number or string` 
-for `NA`
+a designated number or string with `NA`
 
 ```{r}
 replace_x_for_na <- function(x){
-  
   x[x == -999] <- NA
   return(x)
 }
 ```
 
-## Apply this function to one column:
+## Apply the function to a single column
 ```{r}
 replace_x_for_na(df$a)
 ```
 
-## Apply our function to our whole df
+## ...or apply the function to an entire dataframe
 ```{r}
 df <- purrr::modify_if(df, is.numeric, replace_x_for_na)
 df
@@ -100,13 +106,19 @@ df
 
  * Do one thing good
  * Have no 'side-effects'
- * `class(input) = class(output)` (to make the function 'pipe-pable')
+ * `class(input) = class(output)` (to make the function 'pipeable')
  
 __You will hear about the 'pipe (`%>%`)' later__ 
 
-__This workshop does not cover `writing functions` in dept__
+__This workshop does not cover writing functions in depth__
 
-We hope this small example got you inspired in writing more of your own functions
+We hope this small example inspired you to write your own functions
+
+## Take home message
+
+ Instead of copying pieces of code over and over again...
+ 
+ ...write re-usable pieces of code (functions)
 
 # Let's create some R objects
 ### Switch to RStudio RMarkdown document "part1_intro_to_rstudio_and_r.Rmd"
@@ -136,7 +148,7 @@ class(vector)
 class(integer_vector)
 ```
 
-## Getting amount of `NA`s
+## Getting number of `NA`s
 ```{r}
 missing_num <- as.numeric(missing) ## turn logical into numeric  
 missing_num
@@ -166,15 +178,15 @@ df %>% ## pipe `%>%` takes a value an puts it in a function
 ## change the `bins` argument to see what happens
 ```
 
-## **Discuss with your neighbour:**
+## **Discuss with your neighbour**
 
- * How would you turn the above plot in a function that takes two arguments: `bins` and `df`?
- * Try it out using this backbone:
+ * How would you turn the above plot into a function that takes two arguments: `bins` and `df`?
+ * Try it out using the following skeleton:
  
- ```
+```{r, eval=FALSE}
 plot_histogram <- function(df, bins){
 
- ## write plot code here, use the example above
+ ## Write your code here, use the example above
  
  plot <- df %>% ggplot(....)
  ...
@@ -184,13 +196,18 @@ plot_histogram <- function(df, bins){
  return(plot)
 
 }
- 
 ```
 
 
-## R is case sensitive
+## R is case-sensitive!
 
-*_Important note: R is case-sensitive, meaning that it will matter whether you use capital or lower case, keep this in mind if you get a cryptic warning or error!_*
+**Important note**
+
+_R is case-sensitive, i.e. it will regard names with different cases as different names._
+
+<center>`x` _and_ `X` _are different names,_</center>
+<center>as well as `my_variable` _and_ `My_Variable` _._</center><br>
+_are different names. Keep this in mind if you get a cryptic warning or error!_
 
 ## Programming (in R) can be frustrating {.build}
 
@@ -198,24 +215,31 @@ plot_histogram <- function(df, bins){
  * You will get mind-boggling errors. 
  * R is extremely picky about capitals and every opening `(`, `[` or `{` must be matched by a closing `)`, `]` or `}`. 
 
-Mind that in R `.` is the default decimal placeholder!  
+Mind that in R `.` is the decimal separator!
+```
+# Example
+pi <- 3.14159
+
+# NOT: 3,14159
+```
 
 ## Getting help {.build}
 
  * If you're stuck, try the help (`?` or `??` or `help()`) function. 
- * You can get help about any R function by running `?function_name` and `?package_name` 
+ * You can get help on any R function by running `?function_name` and `?package_name` 
  * or `??package_name`, skip down to the examples and look for code that matches what you're trying to do.
- * Another great tool is `Google` or `Stack Overflow`: trying googling the error message, as it's likely someone else has had the same problem, and has gotten help online.
+ * Other great tools are `Google` and `Stack Overflow`: google an error message. It's very likely that someone else encountered the same problem and published a solution.
 
 ## Statistics and R {.build}
 
- * This workshop does not cover statistical applications of R
- * All be it, we will look at an example of a linear regression later on
- * Nowadays R is a versatile language and can be used for various applications, but it was originally designed as a language for performing statistical analyses 
+ * This workshop will not cover statistics using R
+ * Though we will look at an example of a linear regression later on
+ * Nowadays, R is a versatile language that can be used for various applications
+ * Originally, it was designed as a language for statistical analyses 
  * This is why very many statistical applications are available for R
- * To start learning about statisics and R, I can highly recommend the book "Discovering Statistics Using R" by Dr. Andy Field:
+ * If you want to start learning about statisics using R, the book *Discovering Statistics Using R* by Dr. Andy Field is highly recommended^1^
  
-https://uk.sagepub.com/en-gb/eur/discovering-statistics-using-r/book236067%20
+^1^ <https://uk.sagepub.com/en-gb/eur/discovering-statistics-using-r/book236067%20>
 
 ## For more on learning R, start e.g. with:
 
@@ -227,7 +251,7 @@ https://www.youtube.com/watch?v=ACWuV16tdhY&index=21&list=PLqzoL9-eJTNBDdKgJgJza
 
 https://www.youtube.com/watch?v=kvmSAXhX9Hs&index=29&list=PLqzoL9-eJTNBDdKgJgJzaQcY6OXmsXAHU 
 
-and the rest of Mike Marin's lectures, that are also a really great way to start learning R.
+and the rest of Mike Marin's lectures, that are also a really great ways to start learning R.
 Or try datacamp.com
 
 # Packages
@@ -308,20 +332,22 @@ example(mean) # to see a worked example
 demo(graphics) # demonstration of R functions
 ```
 
-## Functions; naming arguments
+## Function calls: to name or not to name
+
+When you use a function (i.e. you 'call the function') you can either explicitly specify which value you want to use for which argument:
 ```{r, error=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
-seed <- c(1:4)
-set.seed(seed = seed)
+s <- c(1:4)
+set.seed(seed = s)   # Function argument "seed" gets the value of variable "s".
 q <- rnorm(n = 10000, mean = 20, sd = 2)
 hist(q)
 ```
-
-## No naming
+... or you can do so implicitly (i.e. by position):
 ```{r, eval=FALSE}
-set.seed(seed)
+set.seed(s)   # The first argument of the function gets the value of "s"
 qq <- rnorm(10000, 20, 2)
 all(q == qq)
 ```
+
 
 __**Write code for humans AND computers, be explicit!**__
 
@@ -331,9 +357,9 @@ __**Write code for humans AND computers, be explicit!**__
 
 When using R for data analysis you will most likely work with data in a matrix, an array, a list or even more likely: a dataframe.
 
-A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represnet different variables.  
+A matrix is a table with only numeric values. An array consists of multiple matices. A list is collection of R objects of different data type. A dataframe is a table with variable names in the first row and observations in the consecutive rows. The columns in a dataframe represent different variables.  
 
-The dataframe and the list are the most widely used datastructures when considering experimental data. 
+The dataframe and the list are the most widely used data structures for experimental data. 
 
 ## Create a List
 ```{r}
