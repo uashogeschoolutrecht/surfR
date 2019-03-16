@@ -1,0 +1,12 @@
+name: surfr_part2_demo_visualizations
+title: surfr_part2_demo_visualizations
+username: marc_teunis
+account: marc_teunis
+server: connect3.hudatascience.nl
+hostUrl: http://connect3.hudatascience.nl:81/__api__
+appId: 11
+bundleId: 26
+url: http://connect3.hudatascience.nl:81/content/11/
+when: 1552726033.20525
+asMultiple: FALSE
+asStatic: TRUE

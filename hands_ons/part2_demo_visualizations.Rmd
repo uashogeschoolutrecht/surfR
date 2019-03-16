@@ -1,12 +1,13 @@
 ---
-title: "Hands-on part 2 - Visualizations"
-subtitle: "SURF Research Bootcamp"
+title: "Hands-on - Visualizations with R"
+subtitle: "SURF Seminar: Data intensive research in practice: An introduction"
 author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
-date: "November 2nd 2018"
+date: "November 6th 2018"
 output:
-  ioslides_presentation: 
-    highlight: pygments
-    widescreen: yes
+  html_document:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -29,10 +30,19 @@ https://simplystatistics.org/2018/01/22/the-dslabs-package-provides-datasets-for
 
 https://github.com/rbind/simplystats
 
+[link to free online book "r4ds":](https://r4ds.had.co.nz/)
 "R for Data Science", Hadley Wickham & Garret Grolemund
+
 
 ## Gapminder
 https://www.gapminder.org/tools/#$state$time$value=2018;;&chart-type=bubbles 
+
+## ggplot2
+The ggplot2 package in R is the best plotting system for R. It's syntax is an implementation of the 'grammar of graphics' and all plots in this demo are created by using ggplot2.
+```{r, echo=FALSE}
+knitr::include_graphics(path = file.path(root, "images",
+                                         "hex-ggplot2.png"))
+```
 
 ## Citations
 ```{r}
@@ -48,19 +58,19 @@ install.packages("dslabs")
 
 ## Loading the data package `{dslabs}` and other packages used
 ```{r}
-knitr::include_graphics(path = file.path(root, "images",
-                                         "hex-ggplot2.png"))
 library(tidyverse)
 library(dslabs)
 library(lubridate)
 ```
 
-## Datasets included in the `{dslabs}` package
-```{r, eval=FALSE}
+## Datasets 
+Included in the `{dslabs}` package
+```{r}
 data(package="dslabs") %>% print()
 ```
 
-## Getting original data wrangling scripts included also in the `{dslabs}` package
+## Getting original data wrangling scripts 
+Included also in the `{dslabs}` package
 ```{r}
 list.files(system.file("script", package = "dslabs"))
 ```
