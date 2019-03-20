@@ -4,9 +4,7 @@ subtitle: "SURF Research Bootcamp"
 author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
 date: "November 2nd 2018"
 output:
-  ioslides_presentation: 
-    highlight: pygments
-    widescreen: yes
+  html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +12,11 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       error = FALSE,
                       message = FALSE, 
-                      fig.width = 5, fig.height = 3.5)
+                      fig.width = 6, fig.height = 4)
+
+## ggplot theme set
+library(ggplot2)
+theme_set(theme_bw())
 ```
 
 ```{r, root_1, include=FALSE}
@@ -143,7 +145,7 @@ For example, adjust the `alpha = ...` or change the variable in `x = ...`, `y = 
 ## 3. Reduce the data in the plot
 ```{r}
 reduce_data_plot <- gapminder %>% 
-  filter(continent == "Africa" | continent == "Europe") %>%
+  dplyr::filter(continent == "Africa" | continent == "Europe") %>%
   
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
@@ -487,7 +489,7 @@ ranking_plot <- gapminder %>%
 ```
 
 ## Plot
-```{r}
+```{r, fig.height=8, fig.width=6}
 ranking_plot
 ```
 

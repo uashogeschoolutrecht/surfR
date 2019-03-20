@@ -1,0 +1,22 @@
+---
+title: "README"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Materials
+
+These are the materials for the SURF Research Bootcamp hosted at Hogeschool Utrecht, November 2, 2018
+
+## Linux Dependencies
+
+If you are on an UBUNTU Linux distro
+For the demos to work completly you will need the system dependencies:
+
+```
+libcairo2-dev
+libudunits2-dev
+```
