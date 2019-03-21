@@ -63,6 +63,7 @@ library(dslabs)
 library(lubridate)
 ```
 
+
 ## Datasets 
 Included in the `{dslabs}` package
 ```{r}
@@ -75,13 +76,14 @@ Included also in the `{dslabs}` package
 list.files(system.file("script", package = "dslabs"))
 ```
 
-## Opening one of the scripts
-```{r}
-wrangle_files <- list.files(system.file("script", package = "dslabs"), full.names = TRUE)
-wrangle_files[[1]]
+## `{ggplot2}` is the core visualization package
+```{r, echo=FALSE}
+
+knitr::include_graphics(path = file.path(root, "images",
+                                         "hex-ggplot2.png"))
 ```
 
-## Loading a specific dataset by name
+## Demo dataset 
 ```{r}
 data("gapminder", package = "dslabs")
 ## ?gapminder for more info on the variables in the dataset
@@ -89,7 +91,7 @@ data("gapminder", package = "dslabs")
 
 The gapminder dataset contains a number of measurements on health and income outcomes for 184 countries from 1960 to 2016. It also includes two character vectors, OECD and OPEC, with the names of OECD and OPEC countries from 2016. 
 
-## Inspecting the dataset with R
+## Inspecting the `gapminder` dataset with R
 ```{r}
 gapminder <- gapminder %>% as_tibble()
 gapminder %>% head(2)
@@ -109,17 +111,17 @@ We call this 'overplotting'.
 
 This can be fixed in several ways:
 
- - Reducing the transparency of data points  
- - Mapping colour to a variable (continuous or categorical)
- - Reduce the data in the plot
- - Mapping a shape to a variable
- - Add noise (`"jitter"`) to points
- - Facetting - create panels for 'categorical' or so-called 'factor' variables in R
- - Summarize the data
- - Displaying a model / relationship that represents the data (and not sho the actual data itself) 
- - Or any combination of the above strategies
+ >- Reducing the transparency of data points  
+ >- Mapping colour to a variable (continuous or categorical)
+ >- Reduce the data in the plot
+ >- Mapping a shape to a variable
+ >- Add noise (`"jitter"`) to points
+ >- Facetting - create panels for 'categorical' or so-called 'factor' variables in R
+ >- Summarize the data
+ >- Displaying a model / relationship that represents the data (and not sho the actual data itself) 
+ >- Or any combination of the above strategies
 
-__Basically you map an `aesthetic` (`aes()`) or a `characteristic` to a variable__
+__Basically you map an `aesthetic` (`aes()`) to a variable__
  
 Let's go over these overplotting methods one by one 
 
@@ -165,6 +167,7 @@ For example, adjust the `alpha = ...` or change the variable in `x = ...`, `y = 
 ```{r}
 reduce_data_plot <- gapminder %>% 
   filter(continent == "Africa" | continent == "Europe") %>%
+  
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
   geom_point(aes(colour = continent), alpha = 0.2) +
@@ -187,6 +190,7 @@ reduce_data_plot
 ```{r, eval=FALSE}
 reduce_data_plot <- gapminder %>% 
   filter(continent == "Africa" | continent == "Europe") %>%
+  
   ggplot(aes(x = fertility,
              y = life_expectancy, colour = continent)) +
   geom_point(alpha = 0.2) +
@@ -200,6 +204,7 @@ reduce_data_plot <- gapminder %>%
 shape_plot <- gapminder %>% 
   dplyr::filter(continent == "Africa" | continent == "Europe",
          year == "1960" | year == "2010") %>%
+  
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
   geom_point(aes(colour = as_factor(as.character(year)), 
@@ -223,6 +228,7 @@ Create panels for 'categorical' or so-called 'factor' variables in R
 facets_plot <- gapminder %>% 
   dplyr::filter(continent == "Africa" | continent == "Europe",
          year == "1960" | year == "2010") %>%
+  
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
   geom_point(aes(colour = continent), alpha = 0.5) +
@@ -285,7 +291,9 @@ labels_plot
 ## Model
 lm <- gapminder %>% lm(formula = life_expectancy ~ fertility)
 
-correlation <- cor.test(x = gapminder$fertility, y = gapminder$life_expectancy, method = "pearson")
+correlation <- cor.test(x = gapminder$fertility, 
+                        y = gapminder$life_expectancy, 
+                        method = "pearson")
 
 # save predictions of the model in the new data frame 
 # together with variable you want to plot against
