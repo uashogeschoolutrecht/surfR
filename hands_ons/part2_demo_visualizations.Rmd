@@ -1,13 +1,9 @@
 ---
 title: "Hands-on - Visualizations with R"
-subtitle: "SURF Seminar: Data intensive research in practice: An introduction"
+subtitle: "SURFsara Research Bootcamp"
 author: "Marc A.T. Teunis; Jan-Willem Lankhaar; Jonathan de Bruin"
 date: "November 6th 2018"
-output:
-  html_document:
-  BiocStyle::html_document:
-    toc: true
-    toc_depth: 2
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +11,11 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       error = FALSE,
                       message = FALSE, 
-                      fig.width = 5, fig.height = 3.5)
+                      fig.width = 6, fig.height = 4)
+
+## ggplot theme set
+library(ggplot2)
+theme_set(theme_bw())
 ```
 
 ```{r, root_1, include=FALSE}
@@ -24,6 +24,23 @@ require("rprojroot") || utils::install.packages("rprojroot")
 library(rprojroot)
 root <- find_root_file(criterion = is_rstudio_project)
 ```
+
+## Get materials
+The materials in this document are hosted on Github:
+
+https://github.com/uashogeschoolutrecht/surfR
+
+To get them locally (in RStudio)
+
+1. Start a new project (`File` --> `New Project`)
+2. Choose `Version Control` --> `Git`
+3. Paste the above url in the `Repository URL` field
+4. Click `OK`
+5. The materials will be cloned to your account or local computer
+
+The rendered HTML document is also hosted on our RStudio::CONNECT server at:
+
+http://connect3.hudatascience.nl:81/surfr_viz/part2_demo_visualizations.html
 
 ## Reference
 https://simplystatistics.org/2018/01/22/the-dslabs-package-provides-datasets-for-teaching-data-science/
@@ -39,6 +56,7 @@ https://www.gapminder.org/tools/#$state$time$value=2018;;&chart-type=bubbles
 
 ## ggplot2
 The ggplot2 package in R is the best plotting system for R. It's syntax is an implementation of the 'grammar of graphics' and all plots in this demo are created by using ggplot2.
+
 ```{r, echo=FALSE}
 knitr::include_graphics(path = file.path(root, "images",
                                          "hex-ggplot2.png"))
@@ -166,7 +184,7 @@ For example, adjust the `alpha = ...` or change the variable in `x = ...`, `y = 
 ## 3. Reduce the data in the plot
 ```{r}
 reduce_data_plot <- gapminder %>% 
-  filter(continent == "Africa" | continent == "Europe") %>%
+  dplyr::filter(continent == "Africa" | continent == "Europe") %>%
   
   ggplot(aes(x = fertility,
              y = life_expectancy)) +
@@ -510,7 +528,7 @@ ranking_plot <- gapminder %>%
 ```
 
 ## Plot
-```{r}
+```{r, fig.height=8, fig.width=6}
 ranking_plot
 ```
 

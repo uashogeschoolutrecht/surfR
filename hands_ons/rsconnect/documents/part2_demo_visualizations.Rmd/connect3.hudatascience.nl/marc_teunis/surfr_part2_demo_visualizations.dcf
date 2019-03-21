@@ -5,8 +5,8 @@ account: marc_teunis
 server: connect3.hudatascience.nl
 hostUrl: http://connect3.hudatascience.nl:81/__api__
 appId: 11
-bundleId: 26
-url: http://connect3.hudatascience.nl:81/content/11/
-when: 1552726033.20525
+bundleId: 29
+url: http://connect3.hudatascience.nl:81/surfr_viz/
+when: 1553155500.71723
 asMultiple: FALSE
 asStatic: TRUE
